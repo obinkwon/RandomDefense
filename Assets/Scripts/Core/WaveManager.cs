@@ -5,6 +5,7 @@ public class WaveManager : MonoBehaviour
     [Header("Wave Settings")]
     [SerializeField] private int currentWave = 0;
     [SerializeField] private float waveInterval = 3f;
+    [SerializeField] private int baseEnemiesPerWave = 1;
 
     [Header("References")]
     [SerializeField] private EnemySpawner enemySpawner;
@@ -39,11 +40,19 @@ public class WaveManager : MonoBehaviour
     {
         currentWave++;
 
-        Debug.Log($"Wave {currentWave} 시작");
+        int enemiesPerWave =
+            baseEnemiesPerWave + currentWave - 1;
+
+        Debug.Log(
+            $"Wave {currentWave} 시작 - 적 {enemiesPerWave}마리"
+        );
 
         if (enemySpawner != null)
         {
-            enemySpawner.SpawnWave(currentWave);
+            enemySpawner.SpawnWave(
+                currentWave,
+                enemiesPerWave
+            );
         }
     }
 }

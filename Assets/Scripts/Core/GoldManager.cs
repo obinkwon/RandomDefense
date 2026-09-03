@@ -6,8 +6,10 @@ public class GoldManager : MonoBehaviour
 
     [Header("Gold")]
     [SerializeField] private int currentGold = 100;
+    [SerializeField] private int characterCost = 50;
 
     public int CurrentGold => currentGold;
+    public int CharacterCost => characterCost;
 
     private void Awake()
     {
@@ -50,5 +52,10 @@ public class GoldManager : MonoBehaviour
         );
 
         return true;
+    }
+
+    public bool SpendCharacterCost()
+    {
+        return SpendGold(characterCost);
     }
 }
