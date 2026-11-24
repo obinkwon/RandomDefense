@@ -1,5 +1,7 @@
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.InputSystem.UI;
 using UnityEngine.UI;
 
 // 인게임 HUD: 위쪽 카운터, 오른쪽 위 진행 버튼, 아래쪽 소환 버튼.
@@ -19,6 +21,13 @@ public class GameUI : MonoBehaviour
     [Header("Pause Icon")]
     [SerializeField] private Sprite pauseSprite;
     [SerializeField] private Sprite playSprite;
+
+    private void Awake()
+    {
+        // 씬에 EventSystem이 없으면 버튼이 눌리지 않는다. 새 Input System용 모듈로 만든다.
+        if (FindFirstObjectByType<EventSystem>() == null)
+            new GameObject("EventSystem", typeof(EventSystem), typeof(InputSystemUIInputModule));
+    }
 
     private void Start()
     {

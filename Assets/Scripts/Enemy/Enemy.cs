@@ -23,8 +23,13 @@ public class Enemy : MonoBehaviour
     public bool IsAlive => currentHp > 0f;
     public bool IsSlowed => slowTimer > 0f;
 
+    private SpriteRenderer spriteRenderer;
+    private FrameAnimator animator;
+
     public void Init(EnemyData data, Transform[] path, float hp, float speedMultiplier)
     {
+        spriteRenderer = GetComponent<SpriteRenderer>();
+        spriteRenderer.flipX = false; // 처음엔 오른쪽을 본다
         enemyData = data;
         name = data.id;
         waypoints = path;
@@ -34,7 +39,7 @@ public class Enemy : MonoBehaviour
         moveSpeed = enemyData.moveSpeed * speedMultiplier;
         Alive.Add(this);
 
-        FrameAnimator animator = TryGetComponent(out FrameAnimator a) ? a : gameObject.AddComponent<FrameAnimator>();
+        animator = TryGetComponent(out FrameAnimator a) ? a : gameObject.AddComponent<FrameAnimator>();
         animator.SetSprite(data.idleSprite);
         animator.PlayLoop(data.moveFrames);
     }
@@ -57,10 +62,25 @@ public class Enemy : MonoBehaviour
         }
 
         Vector3 target = waypoints[nextWaypoint].position;
-        transform.position = Vector3.MoveTowards(transform.position, target, moveSpeed * slowRate * Time.deltaTime);
+
+        // 원본 그림은 오른쪽을 본다. 왼쪽으로 갈 때만 뒤집고, 위아래로 갈 때는 직전 방향 유지.
+        float dx = target.x - transform.position.x;
+        if (Mathf.Abs(dx) > 0.01f)
+            spriteRenderer.flipX = dx < 0f;
+
+        transform.position = Vector3.MoveTowards(transform.position, target, moveSpeed * slowRate * HopFactor() * Time.deltaTime);
 
         if (transform.position == target)
             nextWaypoint = (nextWaypoint + 1) % waypoints.Length;
+    }
+
+    // 뛰는 적은 도약·공중(1, 2번 프레임)에만 2배로 가고 눌림·착지 때는 멈춘다. 평균 속도는 그대로.
+    private float HopFactor()
+    {
+        if (!enemyData.hopMovement || animator.FrameIndex < 0)
+            return 1f;
+
+        return animator.FrameIndex == 1 || animator.FrameIndex == 2 ? 2f : 0f;
     }
 
     public void TakeDamage(float damage)

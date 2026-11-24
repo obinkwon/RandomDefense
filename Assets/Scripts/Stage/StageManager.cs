@@ -15,6 +15,9 @@ public class StageManager : MonoBehaviour
     [Tooltip("10, 20 ... 스테이지에 나오는 보스")]
     [SerializeField] private EnemyData[] bosses;
 
+    // ponytail: 적 이미지가 슬라임뿐이라 슬라임 구간(1~9스테이지)까지만 진행. 적 이미지가 생기면 값을 올리거나 지운다.
+    [SerializeField] private int stageCap = 9;
+
     [Header("Rules")]
     [SerializeField] private float stageDuration = 60f;
     [SerializeField] private int enemyLimit = 100;
@@ -25,10 +28,10 @@ public class StageManager : MonoBehaviour
     private float lifeLossTimer;
 
     public int CurrentStage => currentStage;
-    public int MaxStage => difficulty.maxStage;
+    public int MaxStage => Mathf.Min(difficulty.maxStage, stageCap);
     public float RemainingTime => stageTimer;
     public int EnemyLimit => enemyLimit;
-    public bool IsLastStage => currentStage >= difficulty.maxStage;
+    public bool IsLastStage => currentStage >= MaxStage;
 
     private void Awake()
     {

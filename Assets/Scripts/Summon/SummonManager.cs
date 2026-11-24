@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 // 마나 결정으로 직업을 소환해 빈 칸에 자동 배치한다. 등급을 먼저 뽑고 그 등급 안에서 직업을 균등하게 뽑는다.
 public class SummonManager : MonoBehaviour
@@ -14,6 +15,7 @@ public class SummonManager : MonoBehaviour
     [SerializeField] private Transform[] slots;
 
     private JobUnit[] occupants;
+    private int dragFrom = -1;
 
     public int SummonCost => summonCost;
     public IReadOnlyList<JobUnit> Occupants => occupants;
@@ -22,6 +24,60 @@ public class SummonManager : MonoBehaviour
     {
         Instance = this;
         occupants = new JobUnit[slots.Length];
+    }
+
+    // 직업을 끌어서 다른 칸으로 옮기거나 자리를 바꾼다 (F-17). 마우스·터치 공통.
+    private void Update()
+    {
+        Pointer pointer = Pointer.current;
+        if (pointer == null || Camera.main == null)
+            return;
+
+        Vector3 world = Camera.main.ScreenToWorldPoint(pointer.position.ReadValue());
+        world.z = 0f;
+
+        if (pointer.press.wasPressedThisFrame && GameManager.Instance.CurrentState == GameState.Playing)
+        {
+            int slot = SlotAt(world);
+            if (slot >= 0 && occupants[slot] != null)
+                dragFrom = slot;
+        }
+
+        if (dragFrom < 0)
+            return;
+
+        JobUnit unit = occupants[dragFrom];
+        if (unit == null)
+        {
+            dragFrom = -1;
+            return;
+        }
+
+        if (pointer.press.isPressed)
+        {
+            unit.transform.position = world;
+            return;
+        }
+
+        int to = SlotAt(world);
+        if (to >= 0 && to != dragFrom)
+            Swap(dragFrom, to);
+        else
+            unit.transform.position = slots[dragFrom].position;
+
+        dragFrom = -1;
+    }
+
+    // 칸 간격이 1이라 반 칸 안에 있으면 그 칸으로 본다. 없으면 -1.
+    public int SlotAt(Vector2 world)
+    {
+        for (int i = 0; i < slots.Length; i++)
+        {
+            if (Vector2.Distance(world, slots[i].position) <= 0.5f)
+                return i;
+        }
+
+        return -1;
     }
 
     public bool TrySummon()
@@ -95,21 +151,30 @@ public class SummonManager : MonoBehaviour
 
     private JobData RollJob()
     {
-        JobGrade grade = rates.RollGrade(Random.value);
-        List<JobData> pool = new List<JobData>();
-
+        // ponytail: 이미지가 없는 직업은 아직 소환되지 않게 뺀다. 직업 이미지가 다 생기면 이 조건을 지운다.
+        List<JobData> ready = new List<JobData>();
         foreach (JobData job in jobs)
         {
-            if (job.grade == grade)
-                pool.Add(job);
+            if (job.idleSprite != null)
+                ready.Add(job);
         }
 
-        if (pool.Count == 0)
+        if (ready.Count == 0)
         {
-            Debug.LogError($"{grade} 등급 직업이 jobs에 없습니다.", this);
+            Debug.LogError("소환할 수 있는 직업(이미지 있음)이 없습니다.", this);
             return null;
         }
 
-        return pool[Random.Range(0, pool.Count)];
+        // 뽑힌 등급에 나올 직업이 없으면 다시 뽑는다. 남은 등급끼리 확률 비율이 그대로 유지된다.
+        for (int attempt = 0; attempt < 100; attempt++)
+        {
+            JobGrade grade = rates.RollGrade(Random.value);
+            List<JobData> pool = ready.FindAll(job => job.grade == grade);
+
+            if (pool.Count > 0)
+                return pool[Random.Range(0, pool.Count)];
+        }
+
+        return ready[Random.Range(0, ready.Count)];
     }
 }

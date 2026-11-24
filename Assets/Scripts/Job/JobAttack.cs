@@ -6,12 +6,15 @@ public class JobAttack : MonoBehaviour
 {
     private JobUnit unit;
     private JobTargeting targeting;
+    private SpriteRenderer spriteRenderer;
     private float attackTimer;
 
     private void Awake()
     {
         unit = GetComponent<JobUnit>();
         targeting = GetComponent<JobTargeting>();
+        spriteRenderer = GetComponent<SpriteRenderer>();
+        spriteRenderer.flipX = true; // 기본은 왼쪽을 본다
     }
 
     private void Update()
@@ -21,6 +24,7 @@ public class JobAttack : MonoBehaviour
         if (job == null)
             return;
 
+        Face(targeting.CurrentTarget);
         attackTimer -= Time.deltaTime;
 
         if (attackTimer > 0f)
@@ -41,6 +45,13 @@ public class JobAttack : MonoBehaviour
         // ponytail: 특수공격(skill 열)과 버프 효과는 데이터만 있고 동작은 미구현. 직업별 컴포넌트로 추가 예정.
         unit.Animator.PlayOnce(job.attackFrames, job.idleSprite);
         attackTimer = 1f / job.attackSpeed;
+    }
+
+    // 기본은 왼쪽. 대상이 조금(0.2칸) 넘게 오른쪽에 있을 때만 오른쪽을 본다. 원본 그림은 오른쪽을 본다.
+    private void Face(Enemy target)
+    {
+        if (target != null)
+            spriteRenderer.flipX = target.transform.position.x <= transform.position.x + 0.2f;
     }
 
     private static void HitArea(Vector2 center, float radius, float damage)
