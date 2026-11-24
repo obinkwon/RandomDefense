@@ -22,6 +22,10 @@ public class EnemyData : ScriptableObject
     [Header("Reward")]
     public int crystalReward = 2;
 
+    [Header("Sprites")]
+    public Sprite idleSprite;
+    public Sprite[] moveFrames;
+
     [Header("Boss")]
     [TextArea] public string gimmick;
 }

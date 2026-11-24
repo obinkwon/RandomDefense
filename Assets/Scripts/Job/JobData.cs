@@ -66,6 +66,10 @@ public class JobData : ScriptableObject
     public float armorPenetration;
     public float magicPenetration;
 
+    [Header("Sprites")]
+    public Sprite idleSprite;
+    public Sprite[] attackFrames;
+
     [Header("Special Attack")]
     public string skillName;
     [TextArea] public string skillDescription;

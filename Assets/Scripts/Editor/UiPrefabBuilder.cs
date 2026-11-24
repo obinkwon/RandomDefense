@@ -12,7 +12,7 @@ public static class UiPrefabBuilder
     private const string FontPath = "Assets/Fonts/NotoSansKR-Regular SDF.asset";
 
     [MenuItem("RandomDefense/UI 프리팹 만들기")]
-    private static void Build()
+    internal static void Build()
     {
         Directory.CreateDirectory(PrefabDir);
 

@@ -39,6 +39,7 @@ public class JobAttack : MonoBehaviour
             target.TakeDamage(damage);
 
         // ponytail: 특수공격(skill 열)과 버프 효과는 데이터만 있고 동작은 미구현. 직업별 컴포넌트로 추가 예정.
+        unit.Animator.PlayOnce(job.attackFrames, job.idleSprite);
         attackTimer = 1f / job.attackSpeed;
     }
 

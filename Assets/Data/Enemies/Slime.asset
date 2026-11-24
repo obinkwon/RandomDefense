@@ -19,4 +19,10 @@ MonoBehaviour:
   defense: 0
   magicResist: 0
   crystalReward: 2
+  idleSprite: {fileID: 21300000, guid: 68f91fec6cd44c848ef95c4d3ccb66cf, type: 3}
+  moveFrames:
+  - {fileID: 21300000, guid: f7dff2d9450f405e8ec0da57fa999249, type: 3}
+  - {fileID: 21300000, guid: c33d10240e0a400fa20bbdabdd2db014, type: 3}
+  - {fileID: 21300000, guid: 94d742bb02144d6da69aa4adad1eed56, type: 3}
+  - {fileID: 21300000, guid: 3df60b8af947433eab25f2a51618af97, type: 3}
   gimmick: ""

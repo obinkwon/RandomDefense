@@ -33,6 +33,10 @@ public class Enemy : MonoBehaviour
         currentHp = maxHp;
         moveSpeed = enemyData.moveSpeed * speedMultiplier;
         Alive.Add(this);
+
+        FrameAnimator animator = TryGetComponent(out FrameAnimator a) ? a : gameObject.AddComponent<FrameAnimator>();
+        animator.SetSprite(data.idleSprite);
+        animator.PlayLoop(data.moveFrames);
     }
 
     private void OnDestroy()
