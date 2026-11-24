@@ -18,6 +18,7 @@ MonoBehaviour:
   moveSpeed: 1.0
   defense: 0
   magicResist: 0
+  hopMovement: 1
   crystalReward: 2
   idleSprite: {fileID: 21300000, guid: 68f91fec6cd44c848ef95c4d3ccb66cf, type: 3}
   moveFrames:

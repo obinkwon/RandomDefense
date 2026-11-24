@@ -18,6 +18,8 @@ public class EnemyData : ScriptableObject
     public float moveSpeed = 1f;
     public float defense;
     public float magicResist;
+    [Tooltip("이동 프레임이 눌림·도약·공중·착지 순서일 때, 도약·공중 동안에만 앞으로 간다 (슬라임)")]
+    public bool hopMovement;
 
     [Header("Reward")]
     public int crystalReward = 2;

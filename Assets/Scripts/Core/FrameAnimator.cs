@@ -10,6 +10,9 @@ public class FrameAnimator : MonoBehaviour
     private Sprite[] frames;
     private Sprite restSprite;
     private bool loop;
+
+    // 지금 그리는 프레임 번호. 재생 중이 아니면 -1.
+    public int FrameIndex { get; private set; } = -1;
     private float timer;
 
     private void Awake()
@@ -20,6 +23,7 @@ public class FrameAnimator : MonoBehaviour
     public void SetSprite(Sprite sprite)
     {
         frames = null;
+        FrameIndex = -1;
         if (sprite != null)
             spriteRenderer.sprite = sprite;
     }
@@ -43,6 +47,7 @@ public class FrameAnimator : MonoBehaviour
         loop = repeat;
         restSprite = rest;
         timer = 0f;
+        FrameIndex = 0;
         spriteRenderer.sprite = frames[0];
     }
 
@@ -68,6 +73,7 @@ public class FrameAnimator : MonoBehaviour
             }
         }
 
+        FrameIndex = index;
         spriteRenderer.sprite = frames[index];
     }
 }
