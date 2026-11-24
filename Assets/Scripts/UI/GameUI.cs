@@ -11,6 +11,7 @@ public class GameUI : MonoBehaviour
     [SerializeField] private TMP_Text crystalText;
     [SerializeField] private TMP_Text lifeText;
     [SerializeField] private TMP_Text stageText;
+    [SerializeField] private TMP_Text timeText;
     [SerializeField] private TMP_Text enemyText;
 
     [Header("Buttons")]
@@ -45,7 +46,8 @@ public class GameUI : MonoBehaviour
         lifeText.text = game.Life.ToString();
 
         float time = Mathf.Max(0f, stage.RemainingTime);
-        stageText.text = $"{stage.CurrentStage}/{stage.MaxStage}\n{(int)time / 60}:{(int)time % 60:00}";
+        stageText.text = $"{stage.CurrentStage}/{stage.MaxStage}";
+        timeText.text = $"{(int)time / 60}:{(int)time % 60:00}";
         enemyText.text = $"{stage.CountTowardLimit()}/{stage.EnemyLimit}";
 
         pauseButton.image.sprite = game.CurrentState == GameState.Paused ? playSprite : pauseSprite;

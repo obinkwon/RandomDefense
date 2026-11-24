@@ -28,8 +28,12 @@ MonoBehaviour:
   critDamage: 1.5
   armorPenetration: 0
   magicPenetration: 0
-  idleSprite: {fileID: 21300000, guid: 07b3252bcbc2464ebb7e28653b939f6a, type: 3}
-  attackFrames: []
+  idleSprite: {fileID: 21300000, guid: ac756948c3d1488cb7bab59c593b50e0, type: 3}
+  attackFrames:
+  - {fileID: 21300000, guid: 22c6ce0c78014242a24689a782523386, type: 3}
+  - {fileID: 21300000, guid: a454ab6c0d4b4e16910ce4d0a8322f1c, type: 3}
+  - {fileID: 21300000, guid: 02e1d5fbb0aa474db312babc9a253476, type: 3}
+  - {fileID: 21300000, guid: e11f3bef638b4cd1a96462e7585d39d1, type: 3}
   skillName: ""
   skillDescription: ""
   trigger: 0

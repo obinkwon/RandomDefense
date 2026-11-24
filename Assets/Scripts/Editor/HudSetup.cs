@@ -49,6 +49,13 @@ public static class HudSetup
         TMP_Text crystal = Counter("Counter_Crystal", hud, ref x);
         TMP_Text life = Counter("Counter_Life", hud, ref x);
         TMP_Text stage = Counter("Counter_Stage", hud, ref x);
+        // 시계 아이콘이 없어 아이콘 없는 패널에 시간만 표시한다.
+        RectTransform timePanel = Instantiate("Panel_Steel", hud);
+        timePanel.name = "Counter_Time";
+        timePanel.sizeDelta = new Vector2(180, 100);
+        Anchor(timePanel, new Vector2(0, 1), new Vector2(x, -10));
+        x += timePanel.sizeDelta.x + 16f;
+        TMP_Text time = Label(timePanel, "0:00", 56);
         TMP_Text enemy = Counter("Counter_Enemy", hud, ref x);
 
         // 오른쪽 위: 설정, 배속, 일시정지 (오른쪽부터)
@@ -65,6 +72,7 @@ public static class HudSetup
         so.FindProperty("crystalText").objectReferenceValue = crystal;
         so.FindProperty("lifeText").objectReferenceValue = life;
         so.FindProperty("stageText").objectReferenceValue = stage;
+        so.FindProperty("timeText").objectReferenceValue = time;
         so.FindProperty("enemyText").objectReferenceValue = enemy;
         so.FindProperty("summonButton").objectReferenceValue = summon;
         so.FindProperty("pauseButton").objectReferenceValue = pause;
@@ -101,16 +109,22 @@ public static class HudSetup
         rt.sizeDelta = new Vector2(220, 90);
         Anchor(rt, new Vector2(0.5f, 0), offset);
         Button button = rt.gameObject.AddComponent<Button>();
+        Label(rt, label, 40);
+        return button;
+    }
 
-        RectTransform textRect = NewRect("Label", rt);
+    // 부모를 꽉 채우는 가운데 정렬 글자
+    private static TMP_Text Label(RectTransform parent, string label, float size)
+    {
+        RectTransform textRect = NewRect("Label", parent);
         Stretch(textRect);
         TextMeshProUGUI text = textRect.gameObject.AddComponent<TextMeshProUGUI>();
         text.font = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>(FontPath);
         text.text = label;
-        text.fontSize = 40;
+        text.fontSize = size;
         text.color = Color.white;
         text.alignment = TextAlignmentOptions.Center;
-        return button;
+        return text;
     }
 
     private static RectTransform Instantiate(string prefab, RectTransform parent)
