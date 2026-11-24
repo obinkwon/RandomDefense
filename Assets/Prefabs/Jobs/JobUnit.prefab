@@ -46,13 +46,8 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e4a32e9e2e1037b4a90196eb14cb67fa, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Character
+  m_EditorClassIdentifier: Assembly-CSharp::JobUnit
   jobData: {fileID: 0}
-  stats:
-    attackDamage: 10
-    attackRange: 3
-    attackSpeed: 1
-    maxHp: 100
 --- !u!114 &7970672114568398519
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -64,8 +59,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5d3fd06fc2b174647829661e5da8cee1, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CharacterTarget
-  searchRange: 5
+  m_EditorClassIdentifier: Assembly-CSharp::JobTargeting
 --- !u!114 &2820548514608899647
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -77,9 +71,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f0ae9f5b91ea91243be533708afd8970, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CharacterAttack
-  character: {fileID: 0}
-  targetSystem: {fileID: 0}
+  m_EditorClassIdentifier: Assembly-CSharp::JobAttack
 --- !u!212 &2286610787323728539
 SpriteRenderer:
   serializedVersion: 3

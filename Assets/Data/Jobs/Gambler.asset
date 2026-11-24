@@ -1,0 +1,38 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 98b3fe03c03edb34db08cd6da0357931, type: 3}
+  m_Name: Gambler
+  m_EditorClassIdentifier: Assembly-CSharp::JobData
+  id: gambler
+  jobName: "\ub3c4\ubc15\uc0ac"
+  grade: 4
+  role: 0
+  attackDamage: 90
+  spellPower: 0
+  attackRange: 3
+  attackSpeed: 1
+  targetRule: 0
+  areaRadius: 0
+  targetCount: 1
+  sellPrice: 48
+  critChance: 0
+  critDamage: 1.5
+  armorPenetration: 0
+  magicPenetration: 0
+  skillName: "\uc62c\uc778"
+  skillDescription: "\uacf5\uaca9\ub9c8\ub2e4 \ud53c\ud574 0~3\ubc30 \ub79c\ub364, \ucc98\uce58 \uc2dc 50% \ud655\ub960\ub85c \ub9c8\ub098 \uacb0\uc815 +2"
+  trigger: 0
+  triggerValue: 0
+  specialMultiplier: 0
+  specialRange: 0
+  effectValue: 0
+  effectDuration: 0

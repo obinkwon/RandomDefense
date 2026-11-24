@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8da25caaf11b6404b9de91adaaa679d4, type: 3}
+  m_Name: Orc
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyData
+  id: orc
+  enemyName: "\uc624\ud06c"
+  isBoss: 0
+  moveSpeed: 0.9
+  defense: 5
+  magicResist: 2
+  crystalReward: 2
+  gimmick: ""

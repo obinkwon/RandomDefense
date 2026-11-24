@@ -1,34 +1,26 @@
 using UnityEngine;
 
+// 게임 상태, 라이프, 배속·일시정지를 관리한다.
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance { get; private set; }
 
-    [Header("Game State")]
-    [SerializeField]
-    private GameState currentState = GameState.Ready;
+    [SerializeField] private GameState currentState = GameState.Ready;
+    [SerializeField] private int startLife = 10;
 
-    [Header("Jobs")]
-    [SerializeField]
-    private JobData[] availableJobs;
+    [Header("Speed (천천히 / 빨리)")]
+    [SerializeField] private float slowSpeed = 1f;
+    [SerializeField] private float fastSpeed = 2f;
 
-    [Header("Character")]
-    [SerializeField]
-    private Character characterPrefab;
-
-    [SerializeField]
-    private Transform[] characterSpawnPoints;
+    private int life;
+    private bool isFast;
 
     public GameState CurrentState => currentState;
+    public int Life => life;
+    public bool IsFast => isFast;
 
     private void Awake()
     {
-        if (Instance != null && Instance != this)
-        {
-            Destroy(gameObject);
-            return;
-        }
-
         Instance = this;
     }
 
@@ -39,11 +31,18 @@ public class GameManager : MonoBehaviour
 
     public void StartGame()
     {
+        life = startLife;
         currentState = GameState.Playing;
-
-        Debug.Log("게임 시작");
+        ApplyTimeScale();
     }
 
+    public void SetFast(bool fast)
+    {
+        isFast = fast;
+        ApplyTimeScale();
+    }
+
+    // ponytail: 멀티 미구현이라 일시정지를 항상 허용. 멀티 추가 시 싱글에서만 허용 (F-12).
     public void PauseGame()
     {
         if (currentState != GameState.Playing)
@@ -51,8 +50,6 @@ public class GameManager : MonoBehaviour
 
         currentState = GameState.Paused;
         Time.timeScale = 0f;
-
-        Debug.Log("게임 일시정지");
     }
 
     public void ResumeGame()
@@ -61,152 +58,36 @@ public class GameManager : MonoBehaviour
             return;
 
         currentState = GameState.Playing;
-        Time.timeScale = 1f;
+        ApplyTimeScale();
+    }
 
-        Debug.Log("게임 재개");
+    public void LoseLife()
+    {
+        if (currentState != GameState.Playing)
+            return;
+
+        life--;
+
+        if (life <= 0)
+            GameOver();
+    }
+
+    public void ClearGame()
+    {
+        currentState = GameState.Cleared;
+        Time.timeScale = 0f;
+        Debug.Log("클리어");
     }
 
     public void GameOver()
     {
         currentState = GameState.GameOver;
         Time.timeScale = 0f;
-
         Debug.Log("게임 오버");
     }
 
-    public JobData GetRandomJob()
+    private void ApplyTimeScale()
     {
-        JobData randomJob = JobFactory.GetRandomJob(availableJobs);
-
-        if (randomJob != null)
-        {
-            Debug.Log(
-                $"랜덤 직업 선택: {randomJob.jobName}"
-            );
-        }
-
-        return randomJob;
-    }
-
-    private void SpawnCharacter()
-    {
-        if (characterPrefab == null)
-        {
-            Debug.LogError(
-                "Character Prefab이 설정되지 않았습니다.",
-                this
-            );
-            return;
-        }
-
-        if (characterSpawnPoints == null ||
-            characterSpawnPoints.Length == 0)
-        {
-            Debug.LogError(
-                "Character Spawn Point가 설정되지 않았습니다.",
-                this
-            );
-            return;
-        }
-
-        Transform spawnPoint = GetAvailableSpawnPoint();
-
-        if (spawnPoint == null)
-        {
-            Debug.Log("사용 가능한 타워 슬롯이 없습니다.");
-            return;
-        }
-
-        Character character = Instantiate(
-            characterPrefab,
-            spawnPoint.position,
-            Quaternion.identity
-        );
-
-        Debug.Log(
-            $"Character 생성 완료: {character.name}"
-        );
-    }
-
-    public bool TrySpawnCharacter()
-    {
-        if (GameManager.Instance == null)
-            return false;
-
-        if (currentState != GameState.Playing)
-            return false;
-
-        if (GoldManager.Instance == null)
-        {
-            Debug.LogError("GoldManager을 찾을 수 없습니다.");
-            return false;
-        }
-
-        Transform spawnPoint = GetAvailableSpawnPoint();
-
-        if (spawnPoint == null)
-        {
-            Debug.Log("사용 가능한 타워 슬롯이 없습니다.");
-            return false;
-        }
-
-        if (!GoldManager.Instance.SpendCharacterCost())
-        {
-            return false;
-        }
-
-        Character character = Instantiate(
-            characterPrefab,
-            spawnPoint.position,
-            Quaternion.identity
-        );
-
-        Debug.Log(
-            $"Character 생성 완료: {character.name}"
-        );
-
-        return true;
-    }
-
-    private void Update()
-    {
-
-    }
-
-    public void SummonCharacter()
-    {
-        TrySpawnCharacter();
-    }
-
-    private Transform GetAvailableSpawnPoint()
-    {
-        foreach (Transform spawnPoint in characterSpawnPoints)
-        {
-            if (spawnPoint == null)
-                continue;
-
-            Collider2D[] colliders = Physics2D.OverlapCircleAll(
-                spawnPoint.position,
-                0.1f
-            );
-
-            bool occupied = false;
-
-            foreach (Collider2D collider in colliders)
-            {
-                if (collider.GetComponent<Character>() != null)
-                {
-                    occupied = true;
-                    break;
-                }
-            }
-
-            if (!occupied)
-            {
-                return spawnPoint;
-            }
-        }
-
-        return null;
+        Time.timeScale = isFast ? fastSpeed : slowSpeed;
     }
 }

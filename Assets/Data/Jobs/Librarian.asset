@@ -1,0 +1,38 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 98b3fe03c03edb34db08cd6da0357931, type: 3}
+  m_Name: Librarian
+  m_EditorClassIdentifier: Assembly-CSharp::JobData
+  id: librarian
+  jobName: "\uc0ac\uc11c"
+  grade: 2
+  role: 4
+  attackDamage: 0
+  spellPower: 40
+  attackRange: 3
+  attackSpeed: 0.7
+  targetRule: 3
+  areaRadius: 0
+  targetCount: 1
+  sellPrice: 12
+  critChance: 0
+  critDamage: 1.5
+  armorPenetration: 0
+  magicPenetration: 0
+  skillName: "\uc9c0\uc2dd \uc804\uc218"
+  skillDescription: "\ubc94\uc704 \uc548 \ub9c8\ubc95 \uacc4\uc5f4 \uc9c1\uc5c5 \uc8fc\ubb38\ub825 +25%"
+  trigger: 0
+  triggerValue: 0
+  specialMultiplier: 0
+  specialRange: 3
+  effectValue: 25
+  effectDuration: 0

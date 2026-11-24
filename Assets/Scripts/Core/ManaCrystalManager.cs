@@ -1,61 +1,40 @@
 using UnityEngine;
 
-public class GoldManager : MonoBehaviour
+// 소환 재화 "마나 결정"을 관리한다.
+public class ManaCrystalManager : MonoBehaviour
 {
-    public static GoldManager Instance { get; private set; }
+    public static ManaCrystalManager Instance { get; private set; }
 
-    [Header("Gold")]
-    [SerializeField] private int currentGold = 100;
-    [SerializeField] private int characterCost = 50;
+    [Tooltip("게임 시작 시 마나 결정 (소환 3번 분량)")]
+    [SerializeField] private int currentCrystals = 18;
 
-    public int CurrentGold => currentGold;
-    public int CharacterCost => characterCost;
+    public int CurrentCrystals => currentCrystals;
 
     private void Awake()
     {
-        if (Instance != null && Instance != this)
-        {
-            Destroy(gameObject);
-            return;
-        }
-
         Instance = this;
     }
 
-    public void AddGold(int amount)
+    public void AddCrystals(int amount)
     {
         if (amount <= 0)
             return;
 
-        currentGold += amount;
-
-        Debug.Log(
-            $"골드 획득: +{amount} / 현재 골드: {currentGold}"
-        );
+        currentCrystals += amount;
     }
 
-    public bool SpendGold(int amount)
+    public bool SpendCrystals(int amount)
     {
         if (amount <= 0)
             return false;
 
-        if (currentGold < amount)
+        if (currentCrystals < amount)
         {
-            Debug.Log("골드가 부족합니다.");
+            Debug.Log("마나 결정이 부족합니다.");
             return false;
         }
 
-        currentGold -= amount;
-
-        Debug.Log(
-            $"골드 사용: -{amount} / 현재 골드: {currentGold}"
-        );
-
+        currentCrystals -= amount;
         return true;
-    }
-
-    public bool SpendCharacterCost()
-    {
-        return SpendGold(characterCost);
     }
 }

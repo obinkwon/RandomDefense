@@ -1,0 +1,38 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 98b3fe03c03edb34db08cd6da0357931, type: 3}
+  m_Name: Firefighter
+  m_EditorClassIdentifier: Assembly-CSharp::JobData
+  id: firefighter
+  jobName: "\uc18c\ubc29\uad00"
+  grade: 1
+  role: 3
+  attackDamage: 10
+  spellPower: 0
+  attackRange: 3
+  attackSpeed: 0.6
+  targetRule: 0
+  areaRadius: 0
+  targetCount: 1
+  sellPrice: 6
+  critChance: 0
+  critDamage: 1.5
+  armorPenetration: 0
+  magicPenetration: 0
+  skillName: "\ubb3c\ub300\ud3ec"
+  skillDescription: "3\ubc88\uc9f8 \uacf5\uaca9\ub9c8\ub2e4 \uc9c1\uc120 \uc704 \uc801\uc744 1\uce78 \ub4a4\ub85c \ubc00\uccd0\ub0c4"
+  trigger: 1
+  triggerValue: 3
+  specialMultiplier: 1
+  specialRange: 3
+  effectValue: 0
+  effectDuration: 0

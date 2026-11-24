@@ -1,29 +1,24 @@
 using UnityEngine;
 
-public class CharacterAttack : MonoBehaviour
+// 투사체 없이 공격 모션과 함께 바로 피해를 주는 즉발 공격 (요구사항 F-21).
+[RequireComponent(typeof(JobUnit), typeof(JobTargeting))]
+public class JobAttack : MonoBehaviour
 {
-    [Header("References")]
-    [SerializeField] private Character character;
-    [SerializeField] private CharacterTarget targetSystem;
-
+    private JobUnit unit;
+    private JobTargeting targeting;
     private float attackTimer;
 
-    private void Start()
+    private void Awake()
     {
-        if (character == null)
-        {
-            character = GetComponent<Character>();
-        }
-
-        if (targetSystem == null)
-        {
-            targetSystem = GetComponent<CharacterTarget>();
-        }
+        unit = GetComponent<JobUnit>();
+        targeting = GetComponent<JobTargeting>();
     }
 
     private void Update()
     {
-        if (character == null || targetSystem == null)
+        JobData job = unit.JobData;
+
+        if (job == null)
             return;
 
         attackTimer -= Time.deltaTime;
@@ -31,62 +26,31 @@ public class CharacterAttack : MonoBehaviour
         if (attackTimer > 0f)
             return;
 
-        Attack();
+        Enemy target = targeting.CurrentTarget;
+
+        if (target == null || !target.IsAlive || !targeting.InRange(target))
+            return;
+
+        float damage = DamageCalculator.Calculate(job);
+
+        if (job.areaRadius > 0f)
+            HitArea(target.transform.position, job.areaRadius, damage);
+        else
+            target.TakeDamage(damage);
+
+        // ponytail: 특수공격(skill 열)과 버프 효과는 데이터만 있고 동작은 미구현. 직업별 컴포넌트로 추가 예정.
+        attackTimer = 1f / job.attackSpeed;
     }
 
-    private void Attack()
+    private static void HitArea(Vector2 center, float radius, float damage)
     {
-        Enemy target = targetSystem.CurrentTarget;
-
-        if (target == null)
-            return;
-
-        float distance = Vector2.Distance(
-            transform.position,
-            target.transform.position
-        );
-
-        if (distance > character.Stats.attackRange)
-            return;
-
-        float damage = DamageCalculator.Calculate(character);
-
-        target.TakeDamage(damage);
-
-        ApplyJobAbility(target);
-
-        attackTimer = 1f / character.Stats.attackSpeed;
-
-        Debug.Log(
-            $"공격! {target.name}에게 {damage} 데미지"
-        );
-    }
-
-    private void ApplyJobAbility(Enemy target)
-    {
-        if (character.JobData == null)
-            return;
-
-        switch (character.JobData.ability)
+        // 처치되면 Alive에서 빠지므로 뒤에서부터 돈다.
+        for (int i = Enemy.Alive.Count - 1; i >= 0; i--)
         {
-            case JobAbility.Slow:
-                target.ApplyStatusEffect(
-                    new StatusEffect(
-                        StatusEffectType.Slow,
-                        3f,
-                        0.5f
-                    )
-                );
-                break;
+            Enemy enemy = Enemy.Alive[i];
 
-            case JobAbility.SplashDamage:
-                break;
-
-            case JobAbility.Heal:
-                break;
-
-            case JobAbility.CriticalHit:
-                break;
+            if (Vector2.Distance(center, enemy.transform.position) <= radius)
+                enemy.TakeDamage(damage);
         }
     }
 }

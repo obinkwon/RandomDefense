@@ -1,0 +1,38 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 98b3fe03c03edb34db08cd6da0357931, type: 3}
+  m_Name: Farmer
+  m_EditorClassIdentifier: Assembly-CSharp::JobData
+  id: farmer
+  jobName: "\ub18d\ubd80"
+  grade: 0
+  role: 0
+  attackDamage: 4
+  spellPower: 0
+  attackRange: 1.5
+  attackSpeed: 1
+  targetRule: 1
+  areaRadius: 0
+  targetCount: 1
+  sellPrice: 3
+  critChance: 0
+  critDamage: 1.5
+  armorPenetration: 0
+  magicPenetration: 0
+  skillName: "\ud48d\uc791"
+  skillDescription: "\uc2a4\ud14c\uc774\uc9c0\uac00 \uc9c0\ub0a0 \ub54c\ub9c8\ub2e4 \uacf5\uaca9\ub825 +10% \uc601\uad6c \uc99d\uac00(\ucd5c\ub300 +200%)"
+  trigger: 0
+  triggerValue: 0
+  specialMultiplier: 0
+  specialRange: 0
+  effectValue: 10
+  effectDuration: 0

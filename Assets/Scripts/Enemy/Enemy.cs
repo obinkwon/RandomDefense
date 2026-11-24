@@ -1,164 +1,93 @@
+using System.Collections.Generic;
 using UnityEngine;
 
+// 필드 둘레의 순환 경로(웨이포인트 루프)를 계속 도는 적.
 public class Enemy : MonoBehaviour
 {
-    [Header("Enemy Data")]
+    public static readonly List<Enemy> Alive = new List<Enemy>();
+
     [SerializeField] private EnemyData enemyData;
 
-    [Header("Movement")]
-    [SerializeField] private Transform target;
-
-    [Header("Target Settings")]
-    [SerializeField] private float targetDistance = 0.1f;
-
+    private Transform[] waypoints;
+    private int nextWaypoint;
+    private float maxHp;
     private float currentHp;
-    private float currentMoveSpeed;
+    private float moveSpeed;
 
-    private StatusEffect activeStatusEffect;
+    // 둔화는 중첩되지 않고 가장 강한 것 하나만 적용한다.
+    private float slowRate = 1f;
+    private float slowTimer;
 
     public EnemyData Data => enemyData;
     public float CurrentHp => currentHp;
+    public bool IsAlive => currentHp > 0f;
+    public bool IsSlowed => slowTimer > 0f;
 
-    private void Start()
+    public void Init(EnemyData data, Transform[] path, float hp, float speedMultiplier)
     {
-        if (enemyData == null)
-        {
-            Debug.LogError("EnemyData가 설정되지 않았습니다.", this);
-            return;
-        }
+        enemyData = data;
+        name = data.id;
+        waypoints = path;
+        nextWaypoint = path.Length > 1 ? 1 : 0;
+        maxHp = hp;
+        currentHp = maxHp;
+        moveSpeed = enemyData.moveSpeed * speedMultiplier;
+        Alive.Add(this);
+    }
 
-        currentHp = enemyData.maxHp;
-        currentMoveSpeed = enemyData.moveSpeed;
-
-        Debug.Log(
-            $"{enemyData.enemyName} 생성 - HP: {currentHp}"
-        );
+    private void OnDestroy()
+    {
+        Alive.Remove(this);
     }
 
     private void Update()
     {
-        if (target == null)
+        if (waypoints == null || waypoints.Length == 0)
             return;
 
-        UpdateStatusEffect();
-        MoveToTarget();
-    }
-
-    private void UpdateStatusEffect()
-    {
-        if (activeStatusEffect == null)
+        if (slowTimer > 0f)
         {
-            currentMoveSpeed = enemyData.moveSpeed;
-            return;
+            slowTimer -= Time.deltaTime;
+            if (slowTimer <= 0f)
+                slowRate = 1f;
         }
 
-        activeStatusEffect.duration -= Time.deltaTime;
+        Vector3 target = waypoints[nextWaypoint].position;
+        transform.position = Vector3.MoveTowards(transform.position, target, moveSpeed * slowRate * Time.deltaTime);
 
-        if (activeStatusEffect.duration <= 0f)
-        {
-            activeStatusEffect = null;
-            currentMoveSpeed = enemyData.moveSpeed;
-
-            Debug.Log($"{enemyData.enemyName} 상태이상 종료");
-            return;
-        }
-
-        ApplyStatusEffect();
-    }
-
-    private void ApplyStatusEffect()
-    {
-        if (activeStatusEffect == null)
-            return;
-
-        switch (activeStatusEffect.type)
-        {
-            case StatusEffectType.Slow:
-                currentMoveSpeed =
-                    enemyData.moveSpeed * activeStatusEffect.value;
-                break;
-
-            case StatusEffectType.Poison:
-                break;
-
-            case StatusEffectType.Stun:
-                currentMoveSpeed = 0f;
-                break;
-        }
-    }
-
-    private void MoveToTarget()
-    {
-        transform.position = Vector3.MoveTowards(
-            transform.position,
-            target.position,
-            currentMoveSpeed * Time.deltaTime
-        );
-
-        if (Vector3.Distance(
-            transform.position,
-            target.position
-        ) <= targetDistance)
-        {
-            ReachTarget();
-        }
-    }
-
-    private void ReachTarget()
-    {
-        Debug.Log(
-            $"{enemyData.enemyName}이(가) 목표 지점에 도착했습니다."
-        );
-
-        if (GameManager.Instance != null)
-        {
-            GameManager.Instance.GameOver();
-        }
-
-        Destroy(gameObject);
-    }
-
-    public void SetTarget(Transform newTarget)
-    {
-        target = newTarget;
+        if (transform.position == target)
+            nextWaypoint = (nextWaypoint + 1) % waypoints.Length;
     }
 
     public void TakeDamage(float damage)
     {
-        if (damage <= 0f)
+        if (damage <= 0f || !IsAlive)
             return;
 
         currentHp -= damage;
 
         if (currentHp <= 0f)
-        {
             Die();
-        }
     }
 
-    public void ApplyStatusEffect(StatusEffect effect)
+    // rate: 이동 속도 배율 (0.5 = 50% 속도).
+    public void ApplySlow(float rate, float duration)
     {
-        if (effect == null)
+        if (slowTimer > 0f && rate > slowRate)
             return;
 
-        activeStatusEffect = effect;
+        if (rate < slowRate || duration > slowTimer)
+            slowTimer = duration;
 
-        Debug.Log(
-            $"{enemyData.enemyName}에게 {effect.type} 적용"
-        );
+        slowRate = rate;
     }
 
     private void Die()
     {
-        Debug.Log($"{enemyData.enemyName} 처치");
+        if (ManaCrystalManager.Instance != null)
+            ManaCrystalManager.Instance.AddCrystals(enemyData.crystalReward);
 
-        if (GoldManager.Instance != null)
-        {
-            GoldManager.Instance.AddGold(
-                enemyData.goldReward
-            );
-        }
-
+        Alive.Remove(this);
         Destroy(gameObject);
     }
 }

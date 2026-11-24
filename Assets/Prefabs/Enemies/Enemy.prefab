@@ -47,8 +47,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Enemy
   enemyData: {fileID: 11400000, guid: b6bacc47b87d54442b41e4cf5640cf80, type: 2}
-  target: {fileID: 0}
-  targetDistance: 0.1
 --- !u!212 &-8388033640373145195
 SpriteRenderer:
   serializedVersion: 3

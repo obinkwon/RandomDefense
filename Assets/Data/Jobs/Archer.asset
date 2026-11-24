@@ -12,9 +12,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 98b3fe03c03edb34db08cd6da0357931, type: 3}
   m_Name: Archer
   m_EditorClassIdentifier: Assembly-CSharp::JobData
-  jobName: "\uAD81\uC218"
-  jobType: 1
-  attackDamage: 10
-  attackRange: 4
+  id: archer
+  jobName: "\uad81\uc218"
+  grade: 0
+  role: 0
+  attackDamage: 8
+  spellPower: 0
+  attackRange: 3
   attackSpeed: 1
-  ability: 3
+  targetRule: 1
+  areaRadius: 0
+  targetCount: 1
+  sellPrice: 3
+  critChance: 0
+  critDamage: 1.5
+  armorPenetration: 0
+  magicPenetration: 0
+  skillName: ""
+  skillDescription: ""
+  trigger: 0
+  triggerValue: 0
+  specialMultiplier: 0
+  specialRange: 0
+  effectValue: 0
+  effectDuration: 0

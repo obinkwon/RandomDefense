@@ -1,0 +1,38 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 98b3fe03c03edb34db08cd6da0357931, type: 3}
+  m_Name: Beekeeper
+  m_EditorClassIdentifier: Assembly-CSharp::JobData
+  id: beekeeper
+  jobName: "\uc591\ubd09\uac00"
+  grade: 1
+  role: 2
+  attackDamage: 0
+  spellPower: 14
+  attackRange: 2.5
+  attackSpeed: 0.8
+  targetRule: 1
+  areaRadius: 1.5
+  targetCount: 1
+  sellPrice: 6
+  critChance: 0
+  critDamage: 1.5
+  armorPenetration: 0
+  magicPenetration: 0
+  skillName: "\ubc8c\ub5bc"
+  skillDescription: "\ub9de\uc740 \ubc94\uc704\uc5d0 \ubc8c\ub5bc, 3\ucd08\uac04 \ucd08\ub2f9 \uc8fc\ubb38\ub825\uc758 30% \uc9c0\uc18d \ud53c\ud574"
+  trigger: 0
+  triggerValue: 0
+  specialMultiplier: 0
+  specialRange: 1.5
+  effectValue: 30
+  effectDuration: 3

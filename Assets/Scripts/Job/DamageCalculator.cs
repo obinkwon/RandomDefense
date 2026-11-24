@@ -2,31 +2,16 @@ using UnityEngine;
 
 public static class DamageCalculator
 {
-    public static float Calculate(Character character)
+    // ponytail: 방어력·마법 저항·관통은 아직 미적용. 적 방어 공식 확정 후 추가.
+    public static float Calculate(JobData job)
     {
-        if (character == null)
+        if (job == null)
             return 0f;
 
-        float damage = character.Stats.attackDamage;
+        float damage = job.attackDamage + job.spellPower;
 
-        if (character.JobData == null)
-            return damage;
-
-        switch (character.JobData.ability)
-        {
-            case JobAbility.CriticalHit:
-                damage *= 1.5f;
-                break;
-
-            case JobAbility.SplashDamage:
-                break;
-
-            case JobAbility.Slow:
-                break;
-
-            case JobAbility.Heal:
-                break;
-        }
+        if (Random.value < job.critChance)
+            damage *= job.critDamage;
 
         return damage;
     }
