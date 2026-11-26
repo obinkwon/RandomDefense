@@ -57,14 +57,15 @@ public static class HudSetup
         Button fast = Place("Button_Fast", hud, new Vector2(1, 1), new Vector2(-130, -10), 100);
         Button pause = Place("Button_Pause", hud, new Vector2(1, 1), new Vector2(-240, -10), 100);
 
-        // 아래쪽 한 줄: 조합표 · 소환 · 조합
+        // 아래쪽 한 줄: 조합표 · 소환 · 조합 · 취소(조합 모드에서만 보임)
         Button summon = Place("Button_Summon", hud, new Vector2(0.5f, 0), new Vector2(0, 8), 110);
-        Button combine = TextButton("Button_Combine", "조합", hud, new Vector2(230, 14));
-        Button table = TextButton("Button_CombineTable", "조합표", hud, new Vector2(-230, 14));
+        Button combine = TextButton("Button_Combine", "조합", hud, new Vector2(250, 14), 260);
+        Button cancel = TextButton("Button_CancelCombine", "취소", hud, new Vector2(486, 14), 180);
+        cancel.gameObject.SetActive(false);
+        Button table = TextButton("Button_CombineTable", "조합표", hud, new Vector2(-250, 14), 260);
 
         // 다른 HUD 위에 그려지도록 마지막에 만든다.
-        CombinePanel combinePanel = BuildCombinePanel(hud, "조합", false);
-        CombinePanel tablePanel = BuildCombinePanel(hud, "조합표", true);
+        RecipeTablePanel tablePanel = BuildRecipeTable(hud);
 
         SerializedObject so = new SerializedObject(gameUI);
         so.FindProperty("crystalText").objectReferenceValue = crystal;
@@ -76,7 +77,7 @@ public static class HudSetup
         so.FindProperty("pauseButton").objectReferenceValue = pause;
         so.FindProperty("fastButton").objectReferenceValue = fast;
         so.FindProperty("combineButton").objectReferenceValue = combine;
-        so.FindProperty("combinePanel").objectReferenceValue = combinePanel;
+        so.FindProperty("cancelButton").objectReferenceValue = cancel;
         so.FindProperty("tableButton").objectReferenceValue = table;
         so.FindProperty("tablePanel").objectReferenceValue = tablePanel;
         so.FindProperty("pauseSprite").objectReferenceValue = LoadSprite("btn_pause");
@@ -85,7 +86,7 @@ public static class HudSetup
         so.FindProperty("normalSprite").objectReferenceValue = LoadSprite("btn_normal");
         so.ApplyModifiedProperties();
 
-        // 조합 목록이 쓰는 조합표 연결 (씬 파일을 직접 고치면 열린 씬 저장 때 덮어써진다)
+        // 조합이 쓰는 조합표 연결 (씬 파일을 직접 고치면 열린 씬 저장 때 덮어써진다)
         SummonManager summonManager = Object.FindFirstObjectByType<SummonManager>();
         string[] tables = AssetDatabase.FindAssets("t:CombinationTable");
         if (summonManager == null || tables.Length == 0)
@@ -104,31 +105,79 @@ public static class HudSetup
         Debug.Log("HUD 배치 완료. 설정 버튼은 아직 기능이 연결되지 않았습니다. Ctrl+S로 저장하세요.");
     }
 
-    // 화면 가운데 조합 창: 제목, 닫기 버튼, 세로 스크롤 목록(줄 견본 + 빈 목록 안내).
-    // showAll이면 조합표(전체 조합), 아니면 조합 목록(지금 만들 수 있는 조합).
-    private static CombinePanel BuildCombinePanel(RectTransform hud, string titleText, bool showAll)
+    // 조합표 창 (공통 에셋 시안 "조합표 팝업"을 1.6배: 1200×675 → 1920×1080).
+    // 위쪽 정보 칸과 아래쪽 버튼 줄 사이를 어둡게 가리고, 그 위에 창을 띄운다. 탭·카드는 RecipeTablePanel이 열 때 만든다.
+    private static RecipeTablePanel BuildRecipeTable(RectTransform hud)
     {
-        RectTransform panel = Instantiate("Panel_Wide", hud);
-        panel.name = showAll ? "CombineTablePanel" : "CombinePanel";
-        panel.sizeDelta = new Vector2(1000, 860);
-        Anchor(panel, new Vector2(0.5f, 0.5f), Vector2.zero);
+        RectTransform dim = NewRect("CombineTableDim", hud);
+        dim.anchorMin = Vector2.zero;
+        dim.anchorMax = Vector2.one;
+        dim.offsetMin = new Vector2(0, 154);
+        dim.offsetMax = new Vector2(0, -122);
+        dim.gameObject.AddComponent<Image>().color = new Color(10 / 255f, 8 / 255f, 6 / 255f, 0.55f);
+        Button overlay = dim.gameObject.AddComponent<Button>();
+        overlay.transition = Selectable.Transition.None;
+        dim.gameObject.SetActive(false);
 
-        RectTransform title = NewRect("Title", panel);
-        title.anchorMin = new Vector2(0, 1);
-        title.anchorMax = new Vector2(1, 1);
-        title.pivot = new Vector2(0.5f, 1);
-        title.sizeDelta = new Vector2(0, 90);
-        title.anchoredPosition = new Vector2(0, -20);
-        Label(title, titleText, 48);
+        RectTransform panel = NewRect("CombineTablePanel", hud);
+        panel.anchorMin = new Vector2(0, 1);
+        panel.anchorMax = new Vector2(1, 1);
+        panel.pivot = new Vector2(0.5f, 1);
+        panel.offsetMin = new Vector2(58, -134 - 779);
+        panel.offsetMax = new Vector2(-58, -134);
+        Sliced(panel, "frame_panel", 1.5f);
 
-        Button close = Place("Button_Close", panel, new Vector2(1, 1), new Vector2(-24, -24), 80);
+        // 머리줄: 제목, 재료 거르기 칩, 닫기
+        RectTransform header = NewRect("Header", panel);
+        header.anchorMin = new Vector2(0, 1);
+        header.anchorMax = new Vector2(1, 1);
+        header.pivot = new Vector2(0.5f, 1);
+        header.offsetMin = new Vector2(54, -42 - 77);
+        header.offsetMax = new Vector2(-54, -42);
 
-        // 보이는 영역(Viewport) 안에서 목록(List)이 위아래로 스크롤된다.
+        RectTransform titleRect = NewRect("Title", header);
+        titleRect.anchorMin = Vector2.zero;
+        titleRect.anchorMax = new Vector2(0, 1);
+        titleRect.pivot = new Vector2(0, 0.5f);
+        titleRect.sizeDelta = new Vector2(140, 0);
+        TMP_Text titleText = Label(titleRect, "조합표", 35);
+        titleText.color = new Color32(0xff, 0xe2, 0xa8, 0xff);
+        titleText.fontStyle = FontStyles.Bold;
+
+        RectTransform chip = NewRect("FilterChip", header);
+        chip.anchorMin = new Vector2(0, 0.5f);
+        chip.anchorMax = new Vector2(0, 0.5f);
+        chip.pivot = new Vector2(0, 0.5f);
+        chip.sizeDelta = new Vector2(320, 70);
+        chip.anchoredPosition = new Vector2(160, 0);
+        Image chipImage = Sliced(chip, "frame_card", 3f);
+        Button chipButton = chip.gameObject.AddComponent<Button>();
+        chipButton.targetGraphic = chipImage;
+        Label(chip, "재료:", 22);
+        chip.gameObject.SetActive(false);
+
+        Button close = Place("Button_Close", header, new Vector2(1, 0.5f), Vector2.zero, 77);
+
+        // 왼쪽 세로 등급 탭
+        RectTransform tabs = NewRect("Tabs", panel);
+        tabs.anchorMin = Vector2.zero;
+        tabs.anchorMax = new Vector2(0, 1);
+        tabs.pivot = new Vector2(0, 0.5f);
+        tabs.offsetMin = new Vector2(54, 54);
+        tabs.offsetMax = new Vector2(54 + 192, -132);
+        VerticalLayoutGroup tabLayout = tabs.gameObject.AddComponent<VerticalLayoutGroup>();
+        tabLayout.spacing = 13;
+        tabLayout.childControlWidth = true;
+        tabLayout.childControlHeight = false;
+        tabLayout.childForceExpandWidth = true;
+        tabLayout.childForceExpandHeight = false;
+
+        // 오른쪽 2열 카드 목록. 보이는 영역(Viewport) 안에서 위아래로 스크롤된다.
         RectTransform viewport = NewRect("Viewport", panel);
         viewport.anchorMin = Vector2.zero;
         viewport.anchorMax = Vector2.one;
-        viewport.offsetMin = new Vector2(48, 40);
-        viewport.offsetMax = new Vector2(-48, -130);
+        viewport.offsetMin = new Vector2(54 + 192 + 16, 54);
+        viewport.offsetMax = new Vector2(-54, -132);
         viewport.gameObject.AddComponent<RectMask2D>();
         // 빈 곳을 끌어도 스크롤되게 투명 이미지를 깐다.
         viewport.gameObject.AddComponent<Image>().color = Color.clear;
@@ -139,6 +188,11 @@ public static class HudSetup
         list.pivot = new Vector2(0.5f, 1);
         list.sizeDelta = Vector2.zero;
         list.gameObject.AddComponent<ContentSizeFitter>().verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+        GridLayoutGroup grid = list.gameObject.AddComponent<GridLayoutGroup>();
+        grid.cellSize = new Vector2(600, 147);
+        grid.spacing = new Vector2(13, 13);
+        grid.constraint = GridLayoutGroup.Constraint.FixedColumnCount;
+        grid.constraintCount = 2;
 
         ScrollRect scroll = viewport.gameObject.AddComponent<ScrollRect>();
         scroll.content = list;
@@ -147,35 +201,40 @@ public static class HudSetup
         scroll.movementType = ScrollRect.MovementType.Clamped;
         scroll.scrollSensitivity = 30;
 
-        VerticalLayoutGroup layout = list.gameObject.AddComponent<VerticalLayoutGroup>();
-        layout.spacing = 10;
-        layout.childAlignment = TextAnchor.UpperCenter;
-        layout.childControlWidth = true;
-        layout.childControlHeight = false;
-        layout.childForceExpandWidth = true;
-        layout.childForceExpandHeight = false;
+        RectTransform empty = NewRect("Empty", viewport);
+        empty.anchorMin = new Vector2(0, 1);
+        empty.anchorMax = Vector2.one;
+        empty.pivot = new Vector2(0.5f, 1);
+        empty.sizeDelta = new Vector2(0, 120);
+        TMP_Text emptyText = Label(empty, "조건에 맞는 조합이 없어요", 22);
 
-        RectTransform empty = NewRect("Empty", list);
-        empty.sizeDelta = new Vector2(0, 70);
-        TMP_Text emptyText = Label(empty, "지금 만들 수 있는 조합이 없습니다", 36);
-
-        RectTransform row = Instantiate("Panel_Steel", list);
-        row.name = "RowTemplate";
-        row.sizeDelta = new Vector2(0, 70);
-        Button rowButton = row.gameObject.AddComponent<Button>();
-        Label(row, "재료 + 재료  →  결과", 34);
-
-        CombinePanel combinePanel = panel.gameObject.AddComponent<CombinePanel>();
-        SerializedObject so = new SerializedObject(combinePanel);
-        so.FindProperty("showAll").boolValue = showAll;
-        so.FindProperty("list").objectReferenceValue = list;
-        so.FindProperty("rowTemplate").objectReferenceValue = rowButton;
+        RecipeTablePanel table = panel.gameObject.AddComponent<RecipeTablePanel>();
+        SerializedObject so = new SerializedObject(table);
+        so.FindProperty("tabs").objectReferenceValue = tabs;
+        so.FindProperty("list").objectReferenceValue = grid;
         so.FindProperty("emptyText").objectReferenceValue = emptyText;
+        so.FindProperty("filterChip").objectReferenceValue = chipButton;
         so.FindProperty("closeButton").objectReferenceValue = close;
+        so.FindProperty("overlay").objectReferenceValue = overlay;
+        so.FindProperty("font").objectReferenceValue = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>(FontPath);
+        so.FindProperty("cardFrame").objectReferenceValue = LoadSprite("frame_card");
+        so.FindProperty("lessThan").objectReferenceValue = LoadSprite("symbol_lt");
+        so.FindProperty("plus").objectReferenceValue = LoadSprite("symbol_plus");
+        so.FindProperty("question").objectReferenceValue = LoadSprite("symbol_question");
         so.ApplyModifiedProperties();
 
         panel.gameObject.SetActive(false);
-        return combinePanel;
+        return table;
+    }
+
+    // 9칸 나눔 액자를 부모 크기에 맞춰 깐다. multiplier가 클수록 모서리가 작게 그려진다.
+    private static Image Sliced(RectTransform rt, string sprite, float multiplier)
+    {
+        Image image = rt.gameObject.AddComponent<Image>();
+        image.sprite = LoadSprite(sprite);
+        image.type = Image.Type.Sliced;
+        image.pixelsPerUnitMultiplier = multiplier;
+        return image;
     }
 
     private static TMP_Text Counter(string prefab, RectTransform parent, ref float x)
@@ -195,14 +254,17 @@ public static class HudSetup
         return rt.GetComponent<Button>();
     }
 
-    private static Button TextButton(string name, string label, RectTransform parent, Vector2 offset)
+    private static Button TextButton(string name, string label, RectTransform parent, Vector2 offset, float width)
     {
-        RectTransform rt = Instantiate("Panel_Steel", parent);
-        rt.name = name;
-        rt.sizeDelta = new Vector2(220, 90);
+        // 돌 테두리 패널을 9칸 나눔으로 늘려서 글자 버튼 틀로 쓴다 (모서리 장식이 찌그러지지 않게).
+        RectTransform rt = NewRect(name, parent);
+        rt.sizeDelta = new Vector2(width, 90);
+        Image frame = Sliced(rt, "panel_stone", 2f);
         Anchor(rt, new Vector2(0.5f, 0), offset);
         Button button = rt.gameObject.AddComponent<Button>();
-        Label(rt, label, 40);
+        button.targetGraphic = frame;
+        // "조합하기 0/4"도 돌 테두리 안에 들어가는 크기
+        Label(rt, label, 34);
         return button;
     }
 

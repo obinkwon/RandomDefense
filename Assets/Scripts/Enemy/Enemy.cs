@@ -111,6 +111,8 @@ public class Enemy : MonoBehaviour
         if (ManaCrystalManager.Instance != null)
             ManaCrystalManager.Instance.AddCrystals(enemyData.crystalReward);
 
+        EffectLibrary.Play(EffectLibrary.Instance.enemyDeath, transform.position);
+
         Alive.Remove(this);
         Destroy(gameObject);
     }

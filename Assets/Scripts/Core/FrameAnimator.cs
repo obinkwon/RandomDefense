@@ -6,6 +6,8 @@ public class FrameAnimator : MonoBehaviour
 {
     [SerializeField] private float framesPerSecond = 10f;
 
+    public float FramesPerSecond => framesPerSecond;
+
     private SpriteRenderer spriteRenderer;
     private Sprite[] frames;
     private Sprite restSprite;

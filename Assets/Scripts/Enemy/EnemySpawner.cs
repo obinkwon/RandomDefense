@@ -27,6 +27,9 @@ public class EnemySpawner : MonoBehaviour
     private IEnumerator SpawnEnemies(EnemyData data, int count, float hp, float speedMultiplier)
     {
         runningSpawns++;
+        // 보스 등장: 필드(화면) 가운데에 붉은 균열이 벌어진다.
+        if (data.isBoss && Camera.main != null)
+            EffectLibrary.Play(EffectLibrary.Instance.bossCrack, (Vector2)Camera.main.transform.position, 100);
 
         for (int i = 0; i < count; i++)
         {

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 
 // 마나 결정으로 직업을 소환해 빈 칸에 자동 배치한다. 등급을 먼저 뽑고 그 등급 안에서 직업을 균등하게 뽑는다.
@@ -15,8 +16,16 @@ public class SummonManager : MonoBehaviour
     [Tooltip("필드 가운데의 고정 배치 칸 (기본 6×3)")]
     [SerializeField] private Transform[] slots;
 
+    public const int MaxPicks = 4;
+
     private JobUnit[] occupants;
     private int dragFrom = -1;
+    // 조합 모드에서 고른 칸과 그 칸의 발판
+    private readonly List<int> picks = new List<int>();
+    private readonly List<GameObject> pickMarks = new List<GameObject>();
+
+    public bool CombineMode { get; private set; }
+    public int PickCount => picks.Count;
 
     public CombinationTable Combinations => combinations;
 
@@ -29,7 +38,7 @@ public class SummonManager : MonoBehaviour
         occupants = new JobUnit[slots.Length];
     }
 
-    // 직업을 끌어서 다른 칸으로 옮기거나 자리를 바꾼다 (F-17). 마우스·터치 공통.
+    // 직업을 끌어서 다른 칸으로 옮기거나 자리를 바꾼다 (F-17). 조합 모드에서는 누른 직업을 재료로 고른다. 마우스·터치 공통.
     private void Update()
     {
         Pointer pointer = Pointer.current;
@@ -39,11 +48,19 @@ public class SummonManager : MonoBehaviour
         Vector3 world = Camera.main.ScreenToWorldPoint(pointer.position.ReadValue());
         world.z = 0f;
 
-        if (pointer.press.wasPressedThisFrame && GameManager.Instance.CurrentState == GameState.Playing)
+        // UI(조합표 창과 뒤 가림막 포함) 위를 누르면 필드는 반응하지 않는다.
+        bool overUi = EventSystem.current != null && EventSystem.current.IsPointerOverGameObject();
+
+        if (pointer.press.wasPressedThisFrame && !overUi && GameManager.Instance.CurrentState == GameState.Playing)
         {
             int slot = SlotAt(world);
             if (slot >= 0 && occupants[slot] != null)
-                dragFrom = slot;
+            {
+                if (CombineMode)
+                    TogglePick(slot);
+                else
+                    dragFrom = slot;
+            }
         }
 
         if (dragFrom < 0)
@@ -103,6 +120,7 @@ public class SummonManager : MonoBehaviour
             return false;
 
         Place(job, slot);
+        EffectLibrary.Play(EffectLibrary.Instance.summonPortal, slots[slot].position);
         return true;
     }
 
@@ -118,6 +136,7 @@ public class SummonManager : MonoBehaviour
     public void Sell(JobUnit unit)
     {
         ManaCrystalManager.Instance.AddCrystals(unit.JobData.sellPrice);
+        EffectLibrary.Play(EffectLibrary.Instance.sell, unit.transform.position);
         Remove(unit);
     }
 
@@ -142,22 +161,59 @@ public class SummonManager : MonoBehaviour
         return combinations.Makeable(field);
     }
 
-    // 조합: 재료 직업을 필드에서 지우고 결과 직업을 빈 칸에 놓는다. 비용 없음.
-    public bool Combine(CombinationTable.Recipe recipe)
+    // 조합 모드 켜기/끄기. 켜고 끌 때마다 고른 재료를 비운다.
+    public void SetCombineMode(bool on)
     {
-        if (GameManager.Instance.CurrentState != GameState.Playing || !MakeableRecipes().Contains(recipe))
-            return false;
+        CombineMode = on;
+        dragFrom = -1;
+        picks.Clear();
+        foreach (GameObject mark in pickMarks)
+            Destroy(mark);
+        pickMarks.Clear();
+    }
 
-        foreach (JobData material in recipe.materials)
+    // 조합 모드에서 직업을 누르면 재료로 고르고(최대 4개), 다시 누르면 뺀다.
+    private void TogglePick(int slot)
+    {
+        int index = picks.IndexOf(slot);
+        if (index >= 0)
         {
-            int slot = System.Array.FindIndex(occupants, u => u != null && u.JobData.id == material.id);
-            Remove(occupants[slot]);
+            picks.RemoveAt(index);
+            Destroy(pickMarks[index]);
+            pickMarks.RemoveAt(index);
+            return;
         }
 
-        dragFrom = -1;
-        // 재료를 먼저 지웠으니 빈 칸이 반드시 있다.
-        Place(recipe.result, FindEmptySlot());
-        CombinationTable.MarkFound(recipe.result);
+        if (picks.Count >= MaxPicks)
+            return;
+
+        // 직업 그림 아래에 깔리도록 낮은 순서로 그린다.
+        GameObject mark = EffectLibrary.Loop(EffectLibrary.Instance.combinePick, slots[slot].position, -10);
+        picks.Add(slot);
+        pickMarks.Add(mark);
+    }
+
+    // 고른 재료로 조합한다. 맞는 조합법이 없으면 아무 일도 없다.
+    // 재료를 지우고 결과 직업을 첫 번째로 고른 칸에 놓는다. 비용 없음. 성공하면 조합 모드를 끈다.
+    public bool CombinePicked()
+    {
+        if (GameManager.Instance.CurrentState != GameState.Playing || picks.Count == 0)
+            return false;
+
+        List<JobData> materials = picks.ConvertAll(slot => occupants[slot].JobData);
+        JobData result = combinations.Find(materials);
+        if (result == null)
+            return false;
+
+        int target = picks[0];
+        foreach (int slot in picks)
+            Remove(occupants[slot]);
+
+        SetCombineMode(false);
+        Place(result, target);
+        CombinationTable.MarkFound(result);
+        EffectLibrary lib = EffectLibrary.Instance;
+        EffectLibrary.Play(result.grade == JobGrade.Hidden ? lib.combineHidden : lib.combineResonance, slots[target].position);
         return true;
     }
 
