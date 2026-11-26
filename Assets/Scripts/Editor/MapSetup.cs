@@ -59,6 +59,8 @@ public static class MapSetup
 
                 if (c == '=')
                     sprite = PathSprite(layout, lines, col, row, out angle);
+                else if (c == 'R' && layout.tower != null)
+                    sprite = PathSprite(layout, lines, col, row, out angle); // 균열은 탑 그림에 있다
                 else if (c == 'R')
                     sprite = layout.spawn;
                 else if (c == '#' || c == 'S')
@@ -81,9 +83,22 @@ public static class MapSetup
             }
         }
 
+        List<Vector2Int> loop = MapLayout.TraceLoop(lines);
+
+        // 무너진 탑: R 칸 왼쪽 칸의 왼쪽 아래 모서리에 놓아 R을 오른쪽 아래로 하는 2×2를 덮는다.
+        if (layout.tower != null && loop.Count > 0)
+        {
+            GameObject tower = new GameObject("Tower", typeof(SpriteRenderer));
+            tower.transform.SetParent(map.transform, false);
+            tower.transform.localPosition = new Vector3(loop[0].x - 1, height - 1 - loop[0].y, 0f);
+            SpriteRenderer sr = tower.GetComponent<SpriteRenderer>();
+            sr.sprite = layout.tower;
+            sr.sortingOrder = -50; // 바닥 위, 적·유닛 아래
+        }
+
         Transform pathRoot = NewRoot("Path");
         List<Transform> waypoints = new List<Transform>();
-        foreach (Vector2Int p in MapLayout.TraceLoop(lines))
+        foreach (Vector2Int p in loop)
             waypoints.Add(NewPoint($"Waypoint_{waypoints.Count + 1}", pathRoot, CellCenter(p.x, p.y, width, height)));
 
         if (waypoints.Count < 2)

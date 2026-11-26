@@ -11,11 +11,14 @@ public class SummonManager : MonoBehaviour
     [SerializeField] private SummonRates rates;
     [SerializeField] private JobData[] jobs;
     [SerializeField] private JobUnit jobUnitPrefab;
+    [SerializeField] private CombinationTable combinations;
     [Tooltip("필드 가운데의 고정 배치 칸 (기본 6×3)")]
     [SerializeField] private Transform[] slots;
 
     private JobUnit[] occupants;
     private int dragFrom = -1;
+
+    public CombinationTable Combinations => combinations;
 
     public int SummonCost => summonCost;
     public IReadOnlyList<JobUnit> Occupants => occupants;
@@ -124,6 +127,38 @@ public class SummonManager : MonoBehaviour
             occupants[unit.SlotIndex] = null;
 
         Destroy(unit.gameObject);
+    }
+
+    // 지금 필드로 만들 수 있는 조합법 목록.
+    public List<CombinationTable.Recipe> MakeableRecipes()
+    {
+        List<JobData> field = new List<JobData>();
+        foreach (JobUnit unit in occupants)
+        {
+            if (unit != null)
+                field.Add(unit.JobData);
+        }
+
+        return combinations.Makeable(field);
+    }
+
+    // 조합: 재료 직업을 필드에서 지우고 결과 직업을 빈 칸에 놓는다. 비용 없음.
+    public bool Combine(CombinationTable.Recipe recipe)
+    {
+        if (GameManager.Instance.CurrentState != GameState.Playing || !MakeableRecipes().Contains(recipe))
+            return false;
+
+        foreach (JobData material in recipe.materials)
+        {
+            int slot = System.Array.FindIndex(occupants, u => u != null && u.JobData.id == material.id);
+            Remove(occupants[slot]);
+        }
+
+        dragFrom = -1;
+        // 재료를 먼저 지웠으니 빈 칸이 반드시 있다.
+        Place(recipe.result, FindEmptySlot());
+        CombinationTable.MarkFound(recipe.result);
+        return true;
     }
 
     // 끌어서 칸 옮기기·자리 바꾸기 (요구사항 F-17).

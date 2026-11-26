@@ -30,6 +30,10 @@ public class MapLayout : ScriptableObject
     public Sprite platform;
     public Decor[] decor;
 
+    [Header("Objects")]
+    [Tooltip("R 칸이 오른쪽 아래인 2×2 자리에 얹는 그림. 기준점은 왼쪽 아래, 폭 2유닛")]
+    public Sprite tower;
+
     // 줄 끝 공백·빈 줄을 정리한 글자 배열. [0]이 맨 위 줄.
     public string[] Lines()
     {

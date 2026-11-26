@@ -4,7 +4,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.InputSystem.UI;
 using UnityEngine.UI;
 
-// 인게임 HUD: 위쪽 카운터, 오른쪽 위 진행 버튼, 아래쪽 소환 버튼.
+// 인게임 HUD: 위쪽 카운터, 오른쪽 위 진행 버튼, 아래쪽 소환·조합·조합표 버튼.
 public class GameUI : MonoBehaviour
 {
     [Header("Counters (위쪽)")]
@@ -18,10 +18,20 @@ public class GameUI : MonoBehaviour
     [SerializeField] private Button summonButton;
     [SerializeField] private Button pauseButton;
     [SerializeField] private Button fastButton;
+    [SerializeField] private Button combineButton;
+    [SerializeField] private Button tableButton;
+
+    [Header("Panels")]
+    [SerializeField] private CombinePanel combinePanel;
+    [SerializeField] private CombinePanel tablePanel;
 
     [Header("Pause Icon")]
     [SerializeField] private Sprite pauseSprite;
     [SerializeField] private Sprite playSprite;
+
+    [Header("Speed Icon")]
+    [SerializeField] private Sprite fastSprite;
+    [SerializeField] private Sprite normalSprite;
 
     private void Awake()
     {
@@ -35,6 +45,8 @@ public class GameUI : MonoBehaviour
         summonButton.onClick.AddListener(() => SummonManager.Instance.TrySummon());
         pauseButton.onClick.AddListener(TogglePause);
         fastButton.onClick.AddListener(() => GameManager.Instance.SetFast(!GameManager.Instance.IsFast));
+        combineButton.onClick.AddListener(combinePanel.Open);
+        tableButton.onClick.AddListener(tablePanel.Open);
     }
 
     private void Update()
@@ -51,8 +63,10 @@ public class GameUI : MonoBehaviour
         enemyText.text = $"{stage.CountTowardLimit()}/{stage.EnemyLimit}";
 
         pauseButton.image.sprite = game.CurrentState == GameState.Paused ? playSprite : pauseSprite;
-        // 빨리 상태에서는 배속 버튼을 밝게 표시
-        fastButton.image.color = game.IsFast ? Color.white : new Color(0.65f, 0.65f, 0.65f);
+        // 버튼은 누르면 바뀔 상태를 보여준다: 빨리 감기 중이면 일반 속도 아이콘
+        fastButton.image.sprite = game.IsFast ? normalSprite : fastSprite;
+        // 만들 수 있는 조합이 있으면 조합 버튼을 밝게
+        combineButton.image.color = SummonManager.Instance.MakeableRecipes().Count > 0 ? Color.white : new Color(0.55f, 0.55f, 0.55f);
     }
 
     private void TogglePause()

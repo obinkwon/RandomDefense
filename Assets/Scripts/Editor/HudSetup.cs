@@ -23,7 +23,7 @@ public static class HudSetup
             return;
         }
 
-        if (AssetDatabase.LoadAssetAtPath<GameObject>(PrefabDir + "Button_Play.prefab") == null)
+        if (AssetDatabase.LoadAssetAtPath<GameObject>(PrefabDir + "Counter_Time.prefab") == null)
             UiPrefabBuilder.Build();
 
         // 화면 크기와 상관없이 1920×1080 기준으로 맞춘다.
@@ -49,13 +49,7 @@ public static class HudSetup
         TMP_Text crystal = Counter("Counter_Crystal", hud, ref x);
         TMP_Text life = Counter("Counter_Life", hud, ref x);
         TMP_Text stage = Counter("Counter_Stage", hud, ref x);
-        // 시계 아이콘이 없어 아이콘 없는 패널에 시간만 표시한다.
-        RectTransform timePanel = Instantiate("Panel_Steel", hud);
-        timePanel.name = "Counter_Time";
-        timePanel.sizeDelta = new Vector2(180, 100);
-        Anchor(timePanel, new Vector2(0, 1), new Vector2(x, -10));
-        x += timePanel.sizeDelta.x + 16f;
-        TMP_Text time = Label(timePanel, "0:00", 56);
+        TMP_Text time = Counter("Counter_Time", hud, ref x);
         TMP_Text enemy = Counter("Counter_Enemy", hud, ref x);
 
         // 오른쪽 위: 설정, 배속, 일시정지 (오른쪽부터)
@@ -68,6 +62,10 @@ public static class HudSetup
         Button combine = TextButton("Button_Combine", "조합", hud, new Vector2(230, 14));
         Button table = TextButton("Button_CombineTable", "조합표", hud, new Vector2(-230, 14));
 
+        // 다른 HUD 위에 그려지도록 마지막에 만든다.
+        CombinePanel combinePanel = BuildCombinePanel(hud, "조합", false);
+        CombinePanel tablePanel = BuildCombinePanel(hud, "조합표", true);
+
         SerializedObject so = new SerializedObject(gameUI);
         so.FindProperty("crystalText").objectReferenceValue = crystal;
         so.FindProperty("lifeText").objectReferenceValue = life;
@@ -77,12 +75,107 @@ public static class HudSetup
         so.FindProperty("summonButton").objectReferenceValue = summon;
         so.FindProperty("pauseButton").objectReferenceValue = pause;
         so.FindProperty("fastButton").objectReferenceValue = fast;
+        so.FindProperty("combineButton").objectReferenceValue = combine;
+        so.FindProperty("combinePanel").objectReferenceValue = combinePanel;
+        so.FindProperty("tableButton").objectReferenceValue = table;
+        so.FindProperty("tablePanel").objectReferenceValue = tablePanel;
         so.FindProperty("pauseSprite").objectReferenceValue = LoadSprite("btn_pause");
         so.FindProperty("playSprite").objectReferenceValue = LoadSprite("btn_play");
+        so.FindProperty("fastSprite").objectReferenceValue = LoadSprite("btn_fast");
+        so.FindProperty("normalSprite").objectReferenceValue = LoadSprite("btn_normal");
         so.ApplyModifiedProperties();
 
+        // 조합 목록이 쓰는 조합표 연결 (씬 파일을 직접 고치면 열린 씬 저장 때 덮어써진다)
+        SummonManager summonManager = Object.FindFirstObjectByType<SummonManager>();
+        string[] tables = AssetDatabase.FindAssets("t:CombinationTable");
+        if (summonManager == null || tables.Length == 0)
+        {
+            Debug.LogError("SummonManager 또는 CombinationTable 에셋을 찾지 못했습니다.");
+        }
+        else
+        {
+            SerializedObject summonSo = new SerializedObject(summonManager);
+            summonSo.FindProperty("combinations").objectReferenceValue =
+                AssetDatabase.LoadAssetAtPath<CombinationTable>(AssetDatabase.GUIDToAssetPath(tables[0]));
+            summonSo.ApplyModifiedProperties();
+        }
+
         EditorSceneManager.MarkSceneDirty(canvas.gameObject.scene);
-        Debug.Log("HUD 배치 완료. 조합·조합표·설정 버튼은 아직 기능이 연결되지 않았습니다. Ctrl+S로 저장하세요.");
+        Debug.Log("HUD 배치 완료. 설정 버튼은 아직 기능이 연결되지 않았습니다. Ctrl+S로 저장하세요.");
+    }
+
+    // 화면 가운데 조합 창: 제목, 닫기 버튼, 세로 스크롤 목록(줄 견본 + 빈 목록 안내).
+    // showAll이면 조합표(전체 조합), 아니면 조합 목록(지금 만들 수 있는 조합).
+    private static CombinePanel BuildCombinePanel(RectTransform hud, string titleText, bool showAll)
+    {
+        RectTransform panel = Instantiate("Panel_Wide", hud);
+        panel.name = showAll ? "CombineTablePanel" : "CombinePanel";
+        panel.sizeDelta = new Vector2(1000, 860);
+        Anchor(panel, new Vector2(0.5f, 0.5f), Vector2.zero);
+
+        RectTransform title = NewRect("Title", panel);
+        title.anchorMin = new Vector2(0, 1);
+        title.anchorMax = new Vector2(1, 1);
+        title.pivot = new Vector2(0.5f, 1);
+        title.sizeDelta = new Vector2(0, 90);
+        title.anchoredPosition = new Vector2(0, -20);
+        Label(title, titleText, 48);
+
+        Button close = Place("Button_Close", panel, new Vector2(1, 1), new Vector2(-24, -24), 80);
+
+        // 보이는 영역(Viewport) 안에서 목록(List)이 위아래로 스크롤된다.
+        RectTransform viewport = NewRect("Viewport", panel);
+        viewport.anchorMin = Vector2.zero;
+        viewport.anchorMax = Vector2.one;
+        viewport.offsetMin = new Vector2(48, 40);
+        viewport.offsetMax = new Vector2(-48, -130);
+        viewport.gameObject.AddComponent<RectMask2D>();
+        // 빈 곳을 끌어도 스크롤되게 투명 이미지를 깐다.
+        viewport.gameObject.AddComponent<Image>().color = Color.clear;
+
+        RectTransform list = NewRect("List", viewport);
+        list.anchorMin = new Vector2(0, 1);
+        list.anchorMax = Vector2.one;
+        list.pivot = new Vector2(0.5f, 1);
+        list.sizeDelta = Vector2.zero;
+        list.gameObject.AddComponent<ContentSizeFitter>().verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+
+        ScrollRect scroll = viewport.gameObject.AddComponent<ScrollRect>();
+        scroll.content = list;
+        scroll.viewport = viewport;
+        scroll.horizontal = false;
+        scroll.movementType = ScrollRect.MovementType.Clamped;
+        scroll.scrollSensitivity = 30;
+
+        VerticalLayoutGroup layout = list.gameObject.AddComponent<VerticalLayoutGroup>();
+        layout.spacing = 10;
+        layout.childAlignment = TextAnchor.UpperCenter;
+        layout.childControlWidth = true;
+        layout.childControlHeight = false;
+        layout.childForceExpandWidth = true;
+        layout.childForceExpandHeight = false;
+
+        RectTransform empty = NewRect("Empty", list);
+        empty.sizeDelta = new Vector2(0, 70);
+        TMP_Text emptyText = Label(empty, "지금 만들 수 있는 조합이 없습니다", 36);
+
+        RectTransform row = Instantiate("Panel_Steel", list);
+        row.name = "RowTemplate";
+        row.sizeDelta = new Vector2(0, 70);
+        Button rowButton = row.gameObject.AddComponent<Button>();
+        Label(row, "재료 + 재료  →  결과", 34);
+
+        CombinePanel combinePanel = panel.gameObject.AddComponent<CombinePanel>();
+        SerializedObject so = new SerializedObject(combinePanel);
+        so.FindProperty("showAll").boolValue = showAll;
+        so.FindProperty("list").objectReferenceValue = list;
+        so.FindProperty("rowTemplate").objectReferenceValue = rowButton;
+        so.FindProperty("emptyText").objectReferenceValue = emptyText;
+        so.FindProperty("closeButton").objectReferenceValue = close;
+        so.ApplyModifiedProperties();
+
+        panel.gameObject.SetActive(false);
+        return combinePanel;
     }
 
     private static TMP_Text Counter(string prefab, RectTransform parent, ref float x)

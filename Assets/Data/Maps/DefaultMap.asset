@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0781e7db2c804bbca0b723636d62e046, type: 3}
   m_Name: DefaultMap
   m_EditorClassIdentifier: Assembly-CSharp::MapLayout
-  rows: '................
+  rows: '.ru.............
 
-    .TR===========.B
+    .rR===========.B
 
     ..=SSSSSSSSSS=C.
 
@@ -54,3 +54,4 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: be745c7cc8b24e729db779d2b8defba9, type: 3}
   - symbol: u
     sprite: {fileID: 21300000, guid: c944b13ea08748699e6bf16b905dc4dc, type: 3}
+  tower: {fileID: 21300000, guid: deb071f20bdd4dd5bf2b5dd31fc3197c, type: 3}

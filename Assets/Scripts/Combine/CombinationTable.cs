@@ -28,6 +28,26 @@ public class CombinationTable : ScriptableObject
         return string.Join("|", ids.OrderBy(id => id, StringComparer.Ordinal));
     }
 
+    // 필드 직업으로 만들 수 있는 조합법. 같은 직업이 재료에 여러 번 있으면 필드에도 그만큼 있어야 한다.
+    public List<Recipe> Makeable(IEnumerable<JobData> field)
+    {
+        Dictionary<string, int> have = field.GroupBy(j => j.id).ToDictionary(g => g.Key, g => g.Count());
+        return recipes
+            .Where(r => r.materials.GroupBy(m => m.id).All(g => have.TryGetValue(g.Key, out int n) && n >= g.Count()))
+            .ToList();
+    }
+
+    // 히든 직업은 한 번 만들어야 조합표에 드러난다. 찾은 기록은 게임을 껐다 켜도 남는다.
+    public static bool IsFound(JobData job)
+    {
+        return job.grade != JobGrade.Hidden || PlayerPrefs.GetInt("found_" + job.id) == 1;
+    }
+
+    public static void MarkFound(JobData job)
+    {
+        PlayerPrefs.SetInt("found_" + job.id, 1);
+    }
+
     // 맞는 조합법이 없으면 null.
     public JobData Find(IEnumerable<JobData> materials)
     {
