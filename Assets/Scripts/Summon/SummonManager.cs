@@ -16,10 +16,19 @@ public class SummonManager : MonoBehaviour
     [Tooltip("필드 가운데의 고정 배치 칸 (기본 6×3)")]
     [SerializeField] private Transform[] slots;
 
+    [Header("선택 표시")]
+    [Tooltip("일반 모드에서 누른 직업을 감싸는 꺾쇠 (unit_select)")]
+    [SerializeField] private Sprite selectSprite;
+    [Tooltip("사거리 원 안쪽을 옅게 채우는 원 (지름 2칸)")]
+    [SerializeField] private Sprite rangeFillSprite;
+
     public const int MaxPicks = 4;
 
     private JobUnit[] occupants;
-    private int dragFrom = -1;
+    // 일반 모드에서 고른 칸 (-1이면 없음)과 그 표시
+    private int selected = -1;
+    private GameObject selectMark;
+    private GameObject rangeCircle;
     // 조합 모드에서 고른 칸과 그 칸의 발판
     private readonly List<int> picks = new List<int>();
     private readonly List<GameObject> pickMarks = new List<GameObject>();
@@ -38,54 +47,110 @@ public class SummonManager : MonoBehaviour
         occupants = new JobUnit[slots.Length];
     }
 
-    // 직업을 끌어서 다른 칸으로 옮기거나 자리를 바꾼다 (F-17). 조합 모드에서는 누른 직업을 재료로 고른다. 마우스·터치 공통.
+    // 필드 누르기 (마우스·터치 공통). 공통 이펙트 시안 "선택·사거리·조합 모드 미리보기" 기준.
+    // 일반 모드: 직업을 누르면 꺾쇠와 사거리 원으로 선택, 같은 직업을 다시 누르거나 빈 곳을 누르면 해제.
+    // 조합 모드: 직업을 누르면 재료로 고른다 (최대 4개, 다시 누르면 뺀다).
     private void Update()
     {
+        // 조합·판매로 고른 직업이 사라지면 선택도 푼다.
+        if (selected >= 0 && occupants[selected] == null)
+            Select(-1);
+
         Pointer pointer = Pointer.current;
-        if (pointer == null || Camera.main == null)
+        if (pointer == null || Camera.main == null || !pointer.press.wasPressedThisFrame)
+            return;
+
+        // UI(조합표 창과 뒤 가림막 포함) 위를 누르면 필드는 반응하지 않는다.
+        if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
+            return;
+
+        if (GameManager.Instance.CurrentState != GameState.Playing)
             return;
 
         Vector3 world = Camera.main.ScreenToWorldPoint(pointer.position.ReadValue());
-        world.z = 0f;
+        int slot = SlotAt(world);
+        bool hasUnit = slot >= 0 && occupants[slot] != null;
 
-        // UI(조합표 창과 뒤 가림막 포함) 위를 누르면 필드는 반응하지 않는다.
-        bool overUi = EventSystem.current != null && EventSystem.current.IsPointerOverGameObject();
-
-        if (pointer.press.wasPressedThisFrame && !overUi && GameManager.Instance.CurrentState == GameState.Playing)
+        if (CombineMode)
         {
-            int slot = SlotAt(world);
-            if (slot >= 0 && occupants[slot] != null)
-            {
-                if (CombineMode)
-                    TogglePick(slot);
-                else
-                    dragFrom = slot;
-            }
+            if (hasUnit)
+                TogglePick(slot);
         }
-
-        if (dragFrom < 0)
-            return;
-
-        JobUnit unit = occupants[dragFrom];
-        if (unit == null)
-        {
-            dragFrom = -1;
-            return;
-        }
-
-        if (pointer.press.isPressed)
-        {
-            unit.transform.position = world;
-            return;
-        }
-
-        int to = SlotAt(world);
-        if (to >= 0 && to != dragFrom)
-            Swap(dragFrom, to);
         else
-            unit.transform.position = slots[dragFrom].position;
+        {
+            Select(hasUnit && slot != selected ? slot : -1);
+        }
+    }
 
-        dragFrom = -1;
+    // 칸 하나를 선택한다. -1이면 선택을 푼다.
+    private void Select(int slot)
+    {
+        selected = slot;
+        if (selectMark != null) Destroy(selectMark);
+        if (rangeCircle != null) Destroy(rangeCircle);
+        if (slot < 0)
+            return;
+
+        Vector3 pos = slots[slot].position;
+
+        selectMark = new GameObject("SelectMark", typeof(SpriteRenderer));
+        selectMark.transform.position = pos;
+        SpriteRenderer mark = selectMark.GetComponent<SpriteRenderer>();
+        mark.sprite = selectSprite;
+        mark.sortingOrder = 20;
+
+        rangeCircle = RangeCircle(pos, occupants[slot].JobData.attackRange);
+    }
+
+    // 점선: 흰·투명 두 칸짜리 텍스처를 선을 따라 반복한다 (1칸에 3번). 한 번 만들어 계속 쓴다.
+    private static Material dashMaterial;
+
+    // 스프라이트 기본 재질(프로젝트 렌더러에 맞는 것)을 복제해 점선 텍스처만 바꾼다.
+    private static Material DashMaterial(Material spriteMaterial)
+    {
+        if (dashMaterial != null)
+            return dashMaterial;
+
+        Texture2D dash = new Texture2D(2, 1) { filterMode = FilterMode.Point, wrapMode = TextureWrapMode.Repeat };
+        dash.SetPixels(new[] { Color.white, Color.clear });
+        dash.Apply();
+        return dashMaterial = new Material(spriteMaterial) { mainTexture = dash };
+    }
+
+    // 사거리 원: 흰 점선 테두리 + 옅은 흰 안쪽. 반지름 = 사거리(칸).
+    private GameObject RangeCircle(Vector3 center, float radius)
+    {
+        GameObject root = new GameObject("RangeCircle");
+        root.transform.position = center;
+
+        // 안쪽 원 그림은 지름 2칸이라 반지름만큼 키운다.
+        GameObject fillObject = new GameObject("Fill", typeof(SpriteRenderer));
+        fillObject.transform.SetParent(root.transform, false);
+        fillObject.transform.localScale = Vector3.one * radius;
+        SpriteRenderer fill = fillObject.GetComponent<SpriteRenderer>();
+        fill.sprite = rangeFillSprite;
+        fill.color = new Color(1f, 1f, 1f, 0.08f);
+        fill.sortingOrder = 15;
+
+        LineRenderer line = new GameObject("Dash", typeof(LineRenderer)).GetComponent<LineRenderer>();
+        line.transform.SetParent(root.transform, false);
+        line.useWorldSpace = false;
+        line.loop = true;
+        line.widthMultiplier = 0.05f;
+        line.material = DashMaterial(fill.sharedMaterial);
+        line.textureMode = LineTextureMode.Tile;
+        line.textureScale = new Vector2(3f, 1f);
+        line.sortingOrder = 16;
+
+        const int points = 64;
+        line.positionCount = points;
+        for (int i = 0; i < points; i++)
+        {
+            float t = i * Mathf.PI * 2f / points;
+            line.SetPosition(i, new Vector3(Mathf.Cos(t), Mathf.Sin(t)) * radius);
+        }
+
+        return root;
     }
 
     // 칸 간격이 1이라 반 칸 안에 있으면 그 칸으로 본다. 없으면 -1.
@@ -165,7 +230,7 @@ public class SummonManager : MonoBehaviour
     public void SetCombineMode(bool on)
     {
         CombineMode = on;
-        dragFrom = -1;
+        Select(-1);
         picks.Clear();
         foreach (GameObject mark in pickMarks)
             Destroy(mark);
@@ -197,7 +262,7 @@ public class SummonManager : MonoBehaviour
     // 재료를 지우고 결과 직업을 첫 번째로 고른 칸에 놓는다. 비용 없음. 성공하면 조합 모드를 끈다.
     public bool CombinePicked()
     {
-        if (GameManager.Instance.CurrentState != GameState.Playing || picks.Count == 0)
+        if (GameManager.Instance.CurrentState != GameState.Playing || picks.Count < 2)
             return false;
 
         List<JobData> materials = picks.ConvertAll(slot => occupants[slot].JobData);
@@ -215,18 +280,6 @@ public class SummonManager : MonoBehaviour
         EffectLibrary lib = EffectLibrary.Instance;
         EffectLibrary.Play(result.grade == JobGrade.Hidden ? lib.combineHidden : lib.combineResonance, slots[target].position);
         return true;
-    }
-
-    // 끌어서 칸 옮기기·자리 바꾸기 (요구사항 F-17).
-    public void Swap(int from, int to)
-    {
-        JobUnit a = occupants[from];
-        JobUnit b = occupants[to];
-        occupants[from] = b;
-        occupants[to] = a;
-
-        if (a != null) a.MoveToSlot(to, slots[to].position);
-        if (b != null) b.MoveToSlot(from, slots[from].position);
     }
 
     private int FindEmptySlot()

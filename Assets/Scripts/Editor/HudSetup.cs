@@ -64,6 +64,15 @@ public static class HudSetup
         cancel.gameObject.SetActive(false);
         Button table = TextButton("Button_CombineTable", "조합표", hud, new Vector2(-250, 14), 260);
 
+        // 안내 글자: 아래 버튼 줄 바로 위 가운데
+        RectTransform toast = NewRect("Toast", hud);
+        toast.sizeDelta = new Vector2(900, 60);
+        Anchor(toast, new Vector2(0.5f, 0), new Vector2(0, 160));
+        TMP_Text toastText = Label(toast, "", 32);
+        toastText.fontStyle = FontStyles.Bold;
+        toastText.outlineWidth = 0.2f;
+        toastText.outlineColor = new Color32(0x1d, 0x14, 0x0d, 0xff);
+
         // 다른 HUD 위에 그려지도록 마지막에 만든다.
         RecipeTablePanel tablePanel = BuildRecipeTable(hud);
 
@@ -78,6 +87,8 @@ public static class HudSetup
         so.FindProperty("fastButton").objectReferenceValue = fast;
         so.FindProperty("combineButton").objectReferenceValue = combine;
         so.FindProperty("cancelButton").objectReferenceValue = cancel;
+        so.FindProperty("toastText").objectReferenceValue = toastText;
+        so.FindProperty("combineModeSprite").objectReferenceValue = LoadSprite("btn_combine_mode");
         so.FindProperty("tableButton").objectReferenceValue = table;
         so.FindProperty("tablePanel").objectReferenceValue = tablePanel;
         so.FindProperty("pauseSprite").objectReferenceValue = LoadSprite("btn_pause");
@@ -86,7 +97,7 @@ public static class HudSetup
         so.FindProperty("normalSprite").objectReferenceValue = LoadSprite("btn_normal");
         so.ApplyModifiedProperties();
 
-        // 조합이 쓰는 조합표 연결 (씬 파일을 직접 고치면 열린 씬 저장 때 덮어써진다)
+        // 조합표와 선택 표시 그림 연결 (씬 파일을 직접 고치면 열린 씬 저장 때 덮어써진다)
         SummonManager summonManager = Object.FindFirstObjectByType<SummonManager>();
         string[] tables = AssetDatabase.FindAssets("t:CombinationTable");
         if (summonManager == null || tables.Length == 0)
@@ -98,6 +109,10 @@ public static class HudSetup
             SerializedObject summonSo = new SerializedObject(summonManager);
             summonSo.FindProperty("combinations").objectReferenceValue =
                 AssetDatabase.LoadAssetAtPath<CombinationTable>(AssetDatabase.GUIDToAssetPath(tables[0]));
+            summonSo.FindProperty("selectSprite").objectReferenceValue =
+                AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/Sprites/Effects/unit_select.png");
+            summonSo.FindProperty("rangeFillSprite").objectReferenceValue =
+                AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/Sprites/Effects/range_fill.png");
             summonSo.ApplyModifiedProperties();
         }
 

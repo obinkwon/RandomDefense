@@ -21,10 +21,4 @@ public class JobUnit : MonoBehaviour
         Animator = TryGetComponent(out FrameAnimator animator) ? animator : gameObject.AddComponent<FrameAnimator>();
         Animator.SetSprite(job.idleSprite != null ? job.idleSprite : placeholderSprite);
     }
-
-    public void MoveToSlot(int slotIndex, Vector3 position)
-    {
-        SlotIndex = slotIndex;
-        transform.position = position;
-    }
 }
