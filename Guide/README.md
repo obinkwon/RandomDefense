@@ -9,7 +9,7 @@
 | [03_에셋_제작_절차.md](03_에셋_제작_절차.md) | 둘 다 | 생성부터 게임 반영까지 순서, 저장 위치 |
 | [04_필요_아트_현황.md](04_필요_아트_현황.md) | 둘 다 | 아직 그림이 없는 캐릭터와 아이콘 |
 
-디자인 캔버스 보드(시안·미리보기)는 [DesignPreview/](../DesignPreview/index.html)에 HTML/CSS로 옮겨 두었다. 움직이는 미리보기는 스크립트를 읽어야 해서 파일을 바로 열지 말고 로컬 서버로 연다: `python -m http.server 8765 --directory DesignPreview` → http://localhost:8765
+디자인 캔버스 보드(시안·미리보기)는 [DesignPreview/](../DesignPreview/README.md)에, 기획서·요구사항·직업 조합·스토리 문서는 [Planning/](../Planning/README.md)에 옮겨 두었다. 움직이는 미리보기는 스크립트를 읽어야 해서 파일을 바로 열지 말고 로컬 서버로 연다: `python -m http.server 8765 --directory DesignPreview` → http://localhost:8765
 
 ## 원본 아티팩트
 
@@ -17,9 +17,9 @@
 
 - [랜덤직업디펜스 게임 아트 가이드](https://claude.ai/artifact/CDzjQP4G558tzmo9NZ11KX): 01, 03의 원본
 - [랜덤직업디펜스 공통 에셋 시안](https://claude.ai/artifact/4ygj7CdBxSzBh1sEBHUc6B): 맵 타일, 공통 UI, 이펙트, "게임 에셋으로 넣는 방법" 보드
-- [랜덤직업디펜스 공통 이펙트 시안](https://claude.ai/artifact/AECsTxR9qBGtAPKMsXAQjR)
-- [랜덤직업디펜스 유닛 스프라이트 시안](https://claude.ai/artifact/3n834QooZHAmmsEQVhNgF9)
-- [랜덤직업디펜스 적유닛 스프라이트 시안](https://claude.ai/artifact/THxC7tKB28HyBCAGFuHrtN)
+- [랜덤직업디펜스 공통 이펙트 시안](https://claude.ai/artifact/AECsTxR9qBGtAPKMsXAQjR): 옮기지 않음 (무시)
+- [랜덤직업디펜스 유닛 스프라이트 시안](https://claude.ai/artifact/3n834QooZHAmmsEQVhNgF9): DesignPreview `unit-*.html`
+- [랜덤직업디펜스 적유닛 스프라이트 시안](https://claude.ai/artifact/THxC7tKB28HyBCAGFuHrtN): DesignPreview `enemy-*.html`
 - [RandomDefense 필요 아트](https://claude.ai/artifact/BjDH88WM4psFhtp5toP6Kr): 04의 원본
 - [랜덤 직업 디펜스 직업 밸런스 시트](https://claude.ai/artifact/QNzGBGJyJkFYGCwtXKBQxu): 캐릭터 외형·모션 입력
 

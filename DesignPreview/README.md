@@ -1,6 +1,10 @@
 # DesignPreview
 
-디자인 캔버스 [랜덤직업디펜스 공통 에셋 시안](https://claude.ai/artifact/4ygj7CdBxSzBh1sEBHUc6B)의 보드를 HTML/CSS로 옮긴 폴더다.
+디자인 캔버스 3개의 보드를 HTML/CSS로 옮긴 폴더다. 지금은 이 폴더가 기준이고, 캔버스는 처음 만든 원본으로만 남겨 둔다.
+
+- [랜덤직업디펜스 공통 에셋 시안](https://claude.ai/artifact/4ygj7CdBxSzBh1sEBHUc6B): 맵 타일, 공통 UI, 이펙트, 조합 미리보기, 참고 템플릿
+- [랜덤직업디펜스 유닛 스프라이트 시안](https://claude.ai/artifact/3n834QooZHAmmsEQVhNgF9): `unit-*.html`
+- [랜덤직업디펜스 적유닛 스프라이트 시안](https://claude.ai/artifact/THxC7tKB28HyBCAGFuHrtN): `enemy-*.html`
 
 ## 실행 방법
 
@@ -41,9 +45,17 @@ Claude Code 데스크톱 앱에서는 `.claude/launch.json`의 `design-preview` 
 | `asset-guide.html` | 게임 에셋으로 넣는 방법 | 정적 |
 | `asset-template.html` | 참고 템플릿 | 정적 |
 | `effect-template.html` | 이펙트 참고 템플릿 | 정적 |
+| `unit-swordsman.html` | 검사 · 대기와 공격 모션 (좌·우) | 정적 |
+| `unit-archer.html` | 궁수 · 대기와 공격 모션 (좌·우) | 정적 |
+| `unit-base-body.html` | 기본 몸 템플릿 (좌·우) | 정적 |
+| `unit-concept.html` | 요리사 유닛 스프라이트 시안 1·2 (초기 화풍 비교) | 정적 |
+| `unit-template.html` | 직업 유닛 참고 템플릿 | 정적 |
+| `enemy-slime.html` | 슬라임 · 기본과 이동 모션 (좌·우) | 정적 |
+| `enemy-slime-king.html` | 슬라임 킹 (보스) · 기본과 이동 모션 (좌·우) | 정적 |
+| `enemy-template.html` | 적 유닛 참고 템플릿 | 정적 |
 | `dc-lite.js` | 움직이는 미리보기용 작은 런타임 | |
-| `assets/` | 보드에 쓰인 이미지 145장 (파일 이름은 캔버스의 에셋 id) | |
+| `assets/` | 보드에 쓰인 이미지 195장 (파일 이름은 캔버스의 에셋 id) | |
 
 ## 원본이 바뀌었을 때
 
-이 폴더는 2026-11-27 시점의 캔버스를 옮긴 것이다. 캔버스 보드가 바뀌면 자동으로 따라 바뀌지 않으니, 다시 옮겨 달라고 Claude에게 요청한다.
+이 폴더는 2026-11-27 시점의 캔버스를 옮긴 것이다. 이후로는 이 폴더를 직접 고친다. 캔버스를 다시 고쳤다면 자동으로 따라오지 않으니, 다시 옮겨 달라고 Claude에게 요청한다.
