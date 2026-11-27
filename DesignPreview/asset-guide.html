@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>게임 에셋으로 넣는 방법</title>
+<style>html{background:#e9ebef}body{margin:0}.board{width:max-content;margin:0 auto}</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#1d4ed8}a:hover{color:#1e3a8a}
+</style>
+</head>
+<body>
+<div class="board">
+<div style="width: 900px; height: 1100px; box-sizing: border-box; padding: 48px; display: flex; flex-direction: column; gap: 24px; background: #f5f6f8; font-family: 'Noto Sans KR', sans-serif; color: #1f2328">
+<div style="display: flex; flex-direction: column; gap: 6px">
+<p style="margin: 0; font-size: 14px; font-weight: 700; color: #4b5563">랜덤직업디펜스 · 공통 에셋 · 작업 메모</p>
+<h1 style="margin: 0; font-size: 32px; font-weight: 700">게임 에셋으로 넣는 방법</h1>
+<p style="margin: 0; font-size: 14px; line-height: 1.6; color: #4b5563">이 캔버스의 이미지는 미리보기 크기라서 흐릴 수 있어요. 실제 소스에 넣을 때는 아래 순서로 진행해요.</p>
+</div>
+
+<div style="background: #ffffff; border-radius: 12px; padding: 20px; display: flex; flex-direction: column; gap: 10px; border: 1px solid #d8dbe0">
+<h2 style="margin: 0; font-size: 18px; font-weight: 700">가능한 것</h2>
+<ul style="margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 8px; font-size: 14px; line-height: 1.6; color: #374151">
+<li><b>고해상도 원본</b>: 각 카드의 "Canva 원본" 링크에서 큰 이미지를 받을 수 있음</li>
+<li><b>배경 제거</b>: Canva 배경 제거 기능으로 투명 PNG로 만들기</li>
+<li><b>잘라서 크기 맞추기</b>: 시트에서 타일·버튼을 하나씩 잘라 64px 등 게임 규격으로 줄이기. 픽셀아트는 흐려지지 않게 최근접 보간(Nearest Neighbor)으로 줄여야 함</li>
+</ul>
+</div>
+
+<div style="background: #ffffff; border-radius: 12px; padding: 20px; display: flex; flex-direction: column; gap: 10px; border: 1px solid #d8dbe0">
+<h2 style="margin: 0; font-size: 18px; font-weight: 700">주의할 점</h2>
+<ul style="margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 8px; font-size: 14px; line-height: 1.6; color: #374151">
+<li>AI로 만든 픽셀아트는 격자가 정확하지 않음. 픽셀 크기가 들쭉날쭉하거나 타일 경계가 살짝 어긋날 수 있음</li>
+<li>그대로 64px로 줄이면 선이 뭉개지거나, 타일을 이어 붙일 때 이음새가 보일 수 있음</li>
+<li>자르기·줄이기는 명령어 실행이 필요하므로 작업 전에 먼저 확인받고 진행</li>
+</ul>
+</div>
+
+<div style="background: #ffffff; border-radius: 12px; padding: 20px; display: flex; flex-direction: column; gap: 10px; border: 2px solid #1d4ed8">
+<h2 style="margin: 0; font-size: 18px; font-weight: 700">권장 방법 (둘 중 하나)</h2>
+<ol style="margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 8px; font-size: 14px; line-height: 1.6; color: #374151">
+<li><b>시트에서 잘라 손보기</b>: 시트에서 잘라낸 뒤 Aseprite 같은 픽셀 편집기에서 이음새와 외곽선을 살짝 손봄</li>
+<li><b>쓸 것만 하나씩 따로 생성</b> (더 안정적): 예) "64×64 돌길 직선 타일 1개, 이음새 없이 반복 가능"처럼 개별 에셋으로 생성</li>
+</ol>
+</div>
+
+<div style="background: #ffffff; border-radius: 12px; padding: 20px; display: flex; flex-direction: column; gap: 10px; border: 1px solid #d8dbe0">
+<h2 style="margin: 0; font-size: 18px; font-weight: 700">진행 순서</h2>
+<ol style="margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 8px; font-size: 14px; line-height: 1.6; color: #374151">
+<li>시안 방향 확정</li>
+<li>필요한 타일·버튼 목록 정리</li>
+<li>개별 에셋으로 생성 (또는 시트에서 잘라 손보기)</li>
+<li>배경 제거 → 게임 규격으로 줄이기 → 소스에 반영</li>
+</ol>
+</div>
+</div>
+</div>
+</body>
+</html>

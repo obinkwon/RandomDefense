@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>화면 배치 미리보기</title>
+<style>html{background:#e9ebef}body{margin:0}.board{width:max-content;margin:0 auto}</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&amp;display=swap">
+<style>
+body{margin:0}
+.cp-tile{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;image-rendering:pixelated}
+.cp-slot{position:absolute;inset:0;background:none;border:0;padding:0;cursor:pointer}
+.cp-u{position:absolute;z-index:2;left:-15%;bottom:-14%;width:130%;aspect-ratio:1/1;image-rendering:pixelated;pointer-events:none}
+.cp-pad{position:absolute;z-index:1;left:5%;bottom:-14%;width:90%;aspect-ratio:1/1;pointer-events:none}
+.cp-tile{position:absolute;object-fit:fill;image-rendering:pixelated}
+.cp-sh{position:absolute;z-index:1;left:30%;bottom:34%;width:40%;height:29%;border-radius:50%;background:rgba(0,0,0,.35);pointer-events:none}
+.cp-sunk{position:absolute;inset:0;box-shadow:inset 0 7px 0 rgba(0,0,0,.35);pointer-events:none}
+.cp-pad img,.cp-sum img{position:absolute;inset:0;width:100%;height:100%;image-rendering:pixelated}
+.cp-f1{animation:cpf1 .6s steps(1) infinite}.cp-f2{animation:cpf2 .6s steps(1) infinite}
+@keyframes cpf1{0%{opacity:1}50%{opacity:0}}@keyframes cpf2{0%{opacity:0}50%{opacity:1}}
+.cp-br{position:absolute;z-index:3;left:-50%;top:50%;width:200%;aspect-ratio:1/1;transform:translateY(-50%);pointer-events:none;image-rendering:pixelated}
+.cp-sum{position:absolute;z-index:4;left:-10%;bottom:-6%;width:120%;aspect-ratio:1/1;pointer-events:none}
+.cp-sum img{opacity:0}.cp-s1{animation:cps1 .6s steps(1) forwards}.cp-s2{animation:cps2 .6s steps(1) forwards}
+@keyframes cps1{0%{opacity:1}50%,100%{opacity:0}}@keyframes cps2{0%{opacity:0}50%{opacity:1}100%{opacity:0}}
+.cp-sell{position:absolute;z-index:4;left:-10%;bottom:18%;width:120%;aspect-ratio:1/1;pointer-events:none}
+.cp-sell img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;image-rendering:pixelated;opacity:0}
+.cp-q1{animation:cpq1 .8s steps(1) forwards}.cp-q2{animation:cpq2 .8s steps(1) forwards}.cp-q3{animation:cpq3 .8s steps(1) forwards}.cp-q4{animation:cpq4 .8s steps(1) forwards}
+@keyframes cpq1{0%{opacity:1}25%,100%{opacity:0}}@keyframes cpq2{0%{opacity:0}25%{opacity:1}50%,100%{opacity:0}}@keyframes cpq3{0%,25%{opacity:0}50%{opacity:1}75%,100%{opacity:0}}@keyframes cpq4{0%,50%{opacity:0}75%{opacity:1}100%{opacity:0}}
+.cp-plus{position:absolute;z-index:5;left:50%;top:-30%;color:#9fd8ff;font-size:22px;font-weight:700;text-shadow:2px 2px 0 #1d140d;pointer-events:none;animation:cpup .8s ease-out forwards}
+@keyframes cpup{0%{transform:translate(-50%,0);opacity:1}70%{opacity:1}100%{transform:translate(-50%,-28px);opacity:0}}
+.cp-mv{position:absolute;z-index:1;inset:6%;border:3px solid #ffffff;border-radius:6px;pointer-events:none;animation:cpmv .5s ease-out forwards}
+@keyframes cpmv{0%{opacity:1}100%{opacity:0}}
+.cp-on2{outline:4px solid #e8a33a;outline-offset:-2px;animation:cpb 1.2s steps(2) infinite}
+.cp-tag{position:absolute;z-index:5;left:50%;top:-66%;transform:translateX(-50%);display:flex;align-items:center;gap:2px;padding:1px 6px 1px 3px;background:rgba(29,20,13,.8);border:2px solid #e8a33a;border-radius:4px;pointer-events:none;white-space:nowrap}
+.cp-tag img{width:18px;height:18px;object-fit:contain;image-rendering:pixelated}
+.cp-tag span{color:#9fd8ff;font-size:14px;font-weight:700}
+.cp-enemy{position:absolute;inset:22%;background:#7fbf4a;border:3px solid #1d140d;border-radius:40% 40% 20% 20%;z-index:2}
+.cp-boss-e{position:absolute;inset:8% 8% 10% 8%;background:#4f9a2f;border:4px solid #1d140d;border-radius:42% 42% 18% 18%;z-index:3;box-shadow:inset 0 -6px 0 #3a7a22,0 0 0 3px #c8231b;animation:cpbe .9s steps(2) infinite}
+.cp-boss-e::before,.cp-boss-e::after{content:"";position:absolute;top:34%;width:14%;height:16%;background:#1d140d}
+.cp-boss-e::before{left:28%}.cp-boss-e::after{right:28%}
+@keyframes cpbe{50%{transform:scale(1.06,.94)}}
+.cp-hud{position:relative;width:150px;height:62px;display:flex;align-items:center;gap:6px;padding:0 0 0 20px;box-sizing:border-box}
+.cp-btn{position:relative;height:64px;display:flex;align-items:center;justify-content:center;gap:6px;background:none;border:0;padding:0;font-family:inherit;cursor:pointer}
+.cp-pnl{position:absolute;inset:0;width:100%;height:100%;object-fit:fill;image-rendering:pixelated}
+.cp-n9{position:absolute;inset:0;display:grid;grid-template-columns:26px minmax(0,1fr) 26px;grid-template-rows:26px minmax(0,1fr) 26px;overflow:hidden;pointer-events:none}
+.cp-n9 img{width:100%;height:100%;min-width:0;min-height:0;display:block;object-fit:fill}
+.cp-ico{position:relative;width:32px;height:32px;object-fit:contain;image-rendering:pixelated}
+.cp-num{position:relative;color:#f3e6d0;font-size:18px;font-weight:700;text-shadow:2px 2px 0 #1d140d}
+.cp-lbl{position:relative;color:#f3e6d0;font-size:20px;font-weight:700;text-shadow:2px 2px 0 #1d140d}
+.cp-on{outline:4px solid #2f7de0;outline-offset:-2px;animation:cpb 1.2s steps(2) infinite}
+@keyframes cpb{50%{opacity:.8}}
+.cp-boss{position:absolute;inset:0;z-index:30;pointer-events:none;overflow:hidden}
+.cp-dim{position:absolute;inset:0;background:rgba(20,4,4,.35);opacity:0;animation:cpdim 3.2s linear forwards}
+@keyframes cpdim{0%{opacity:0}8%,88%{opacity:1}100%{opacity:0}}
+.cp-bb{position:absolute;left:0;right:0;height:44px;display:flex;overflow:hidden}
+.cp-bb img{height:100%;width:auto;flex:none;image-rendering:pixelated}
+.cp-bbt{top:0;animation:cpbt 3.2s steps(1,end) forwards}.cp-bbb{bottom:0;animation:cpbb 3.2s steps(1,end) forwards}
+@keyframes cpbt{0%{transform:translateY(-100%)}4%{transform:translateY(-50%)}8%{transform:none}20%,32%,44%{opacity:.35}26%,38%,50%{opacity:1}90%{transform:none;opacity:1}95%,100%{transform:translateY(-100%);opacity:0}}
+@keyframes cpbb{0%{transform:translateY(100%)}4%{transform:translateY(50%)}8%{transform:none}20%,32%,44%{opacity:.35}26%,38%,50%{opacity:1}90%{transform:none;opacity:1}95%,100%{transform:translateY(100%);opacity:0}}
+.cp-crk{position:absolute;left:50%;top:44%;width:320px;height:320px;margin:-160px 0 0 -160px}
+.cp-crk img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;image-rendering:pixelated;opacity:0}
+.cp-k1{animation:cpk1 3.2s steps(1,end) forwards}.cp-k2{animation:cpk2 3.2s steps(1,end) forwards}.cp-k3{animation:cpk3 3.2s steps(1,end) forwards}.cp-k4{animation:cpk4 3.2s steps(1,end) forwards}
+@keyframes cpk1{0%,11%{opacity:0}12%{opacity:1}18%,100%{opacity:0}}
+@keyframes cpk2{0%,17%{opacity:0}18%{opacity:1}24%,100%{opacity:0}}
+@keyframes cpk3{0%,23%{opacity:0}24%{opacity:1}30%,100%{opacity:0}}
+@keyframes cpk4{0%,29%{opacity:0}30%,88%{opacity:1}95%,100%{opacity:0}}
+.cp-ban{position:absolute;left:50%;top:40%;width:520px;height:140px;margin-left:-260px;display:flex;align-items:center;justify-content:center;opacity:0;animation:cpban 3.2s linear forwards}
+.cp-ban img{position:absolute;inset:0;width:100%;height:100%;object-fit:fill;image-rendering:pixelated}
+.cp-ban span{position:relative;color:#ffe2a8;font-size:30px;font-weight:700;text-shadow:3px 3px 0 #1d140d}
+@keyframes cpban{0%,17%{opacity:0;transform:translateY(-220%)}18%{opacity:1;transform:translateY(-220%)}25%{transform:translateY(6%)}28%{transform:translateY(-4%)}30%,88%{transform:none;opacity:1}95%,100%{transform:none;opacity:0}}
+
+</style>
+</head>
+<body>
+<div class="board" id="root"></div>
+<script src="dc-lite.js"></script>
+<script>
+DC.register("CombinePreview", "<div style=\"width: 1400px; height: 1000px; box-sizing: border-box; padding: 48px; display: flex; flex-direction: column; gap: 18px; background: #f5f6f8; font-family: 'Noto Sans KR', sans-serif; color: #1f2328\">\n<div style=\"display: flex; flex-direction: column; gap: 6px\">\n<p style=\"margin: 0; font-size: 14px; font-weight: 700; color: #4b5563\">랜덤직업디펜스 · 맵 · 이펙트 · 움직이는 미리보기</p>\n<h1 style=\"margin: 0; font-size: 28px; font-weight: 700\">화면 배치 미리보기 (맵 배치 + 선택 · 사거리 · 조합 모드 · 소환)</h1>\n<p style=\"margin: 0; font-size: 14px; color: #4b5563\">맵 배치 미리보기와 한 단 올린 버전을 이 보드 하나로 합침. 맵 14×9칸, 한 칸 75px, 가운데 5×10 배치 칸, 위아래 정보 칸·버튼, 왼쪽 위 무너진 탑. 유닛은 검사 대기 이미지(배경 제거). 누를 수 있는 아래 버튼은 돌 패널(9분할). 일반 모드: 유닛을 누르면 꺾쇠와 사거리 원(1.5칸). 조합 모드: 조합 버튼이 '조합하기'로 바뀌고(고른 개수는 표시하지 않음, 히든 조합 재료 수가 드러나지 않게) 마나 결정 색으로 깜빡임, 누른 유닛 발밑에 발판(개수 제한 없음, 조합은 2개 이상부터). 배치 영역 버튼으로 비교: '한 단 올림'은 공통 에셋 시안의 새 타일(문양 없는 돌 받침 타일 50칸 + 맨 아래 앞면 조각 10개)를 정사각 칸(게임 64×64 격자와 같은 방식)에 깔고, 유닛 그림자·사거리는 검사 시점에 맞춘 1.4:1 타원으로 그린 것, '지금 평평'은 기존 배치 칸 타일. 보스 등장 버튼(미리보기용, 게임에 없음): 경고 띠가 위아래로 들어와 깜빡임 → 보스 이름 배너가 떨어짐, 동시에 균열에서 살짝 큰 보스 슬라임(임시 도형)이 나와 경로를 돎. 유닛 처음 상태로 누르면 사라짐, 3.2초 뒤 사라짐. 소환: 첫 번째 빈 배치 칸에 차원문 2프레임 후 등장. 적은 색 도형 자리 표시</p>\n</div>\n<div style=\"position: relative; width: 1200px; height: 675px; background: #2b3a2a; overflow: hidden; border-radius: 12px\">\n<sc-if value=\"{{boss}}\" hint-placeholder-val=\"{{ false }}\"><div class=\"cp-boss\" aria-label=\"보스 등장 연출\"><div class=\"cp-dim\"></div><div class=\"cp-bb cp-bbt\"><img src=\"assets/551c5fbec44d7e56a16a79b74fa71aee.png\" alt=\"\"><img src=\"assets/551c5fbec44d7e56a16a79b74fa71aee.png\" alt=\"\"><img src=\"assets/551c5fbec44d7e56a16a79b74fa71aee.png\" alt=\"\"><img src=\"assets/551c5fbec44d7e56a16a79b74fa71aee.png\" alt=\"\"><img src=\"assets/551c5fbec44d7e56a16a79b74fa71aee.png\" alt=\"\"><img src=\"assets/551c5fbec44d7e56a16a79b74fa71aee.png\" alt=\"\"></div><div class=\"cp-bb cp-bbb\"><img src=\"assets/551c5fbec44d7e56a16a79b74fa71aee.png\" alt=\"\"><img src=\"assets/551c5fbec44d7e56a16a79b74fa71aee.png\" alt=\"\"><img src=\"assets/551c5fbec44d7e56a16a79b74fa71aee.png\" alt=\"\"><img src=\"assets/551c5fbec44d7e56a16a79b74fa71aee.png\" alt=\"\"><img src=\"assets/551c5fbec44d7e56a16a79b74fa71aee.png\" alt=\"\"><img src=\"assets/551c5fbec44d7e56a16a79b74fa71aee.png\" alt=\"\"></div><div class=\"cp-ban\"><img src=\"assets/6ef77d005661a63d680bba1caf8fd80e.png\" alt=\"\"><span>슬라임 킹</span></div></div></sc-if>\n\n<sc-if value=\"{{view34}}\" hint-placeholder-val=\"{{ true }}\"><div aria-label=\"한 단 올린 배치 영역 앞면\" style=\"position: absolute; left: 225px; top: {{faceTop}}px; width: 750px; height: 15px; display: grid; grid-template-columns: repeat(10, 75px); box-shadow: 0 8px 0 rgba(10,8,6,0.38); z-index: 1\"><sc-for list=\"{{fronts}}\" as=\"fr\" hint-placeholder-count=\"10\"><img src=\"assets/f738c3b0543d24796c6072b336d5736e.png\" alt=\"\" style=\"width: 100%; height: 100%; display: block; object-fit: fill; image-rendering: pixelated\"></sc-for></div></sc-if>\n<div style=\"position: absolute; left: 75px; top: {{mapTop}}px; width: 1050px; height: {{mapH}}px; display: grid; grid-template-columns: repeat(14, 75px); grid-template-rows: repeat(9, {{rowH}}px)\">\n<sc-for list=\"{{cells}}\" as=\"c\" hint-placeholder-count=\"126\">\n<div style=\"position: relative; overflow: {{c.ov}}; background: #5b8a3c url({{c.bg}}) 0 0 / 100% 100%; image-rendering: pixelated\">\n<img class=\"cp-tile\" src=\"{{c.src}}\" alt=\"\" style=\"left: {{c.il}}px; top: {{c.it}}px; width: {{c.iw}}px; height: {{c.ih}}px; object-fit: {{c.fit}}; transform: rotate({{c.rot}}deg)\">\n<sc-if value=\"{{c.face}}\" hint-placeholder-val=\"{{ false }}\"><img src=\"assets/f738c3b0543d24796c6072b336d5736e.png\" alt=\"\" style=\"position: absolute; left: 0; top: 55px; width: 75px; height: 15px; object-fit: fill; image-rendering: pixelated; box-shadow: 0 5px 0 rgba(10,8,6,0.38)\"></sc-if>\n<sc-if value=\"{{c.sunk}}\" hint-placeholder-val=\"{{ false }}\"><span class=\"cp-sunk\"></span></sc-if>\n<sc-if value=\"{{c.enemy}}\" hint-placeholder-val=\"{{ false }}\"><span class=\"cp-enemy\"></span></sc-if><sc-if value=\"{{c.boss}}\" hint-placeholder-val=\"{{ false }}\"><span class=\"cp-boss-e\" aria-label=\"보스 슬라임 (임시)\"></span></sc-if>\n<sc-if value=\"{{c.slot}}\" hint-placeholder-val=\"{{ false }}\">\n<button class=\"cp-slot\" onClick=\"{{c.tap}}\" aria-label=\"{{c.label}}\">\n<sc-if value=\"{{c.moved}}\" hint-placeholder-val=\"{{ false }}\"><span class=\"cp-mv\"></span></sc-if>\n<sc-if value=\"{{c.shadow}}\" hint-placeholder-val=\"{{ false }}\"><span class=\"cp-sh\"></span></sc-if>\n<sc-if value=\"{{c.picked}}\" hint-placeholder-val=\"{{ false }}\"><div class=\"cp-pad\" style=\"bottom: {{padBottom}}%\"><img class=\"cp-f1\" src=\"assets/05ac119030a6d386e70fac459c5244c9.png\" alt=\"\"><img class=\"cp-f2\" src=\"assets/5debdae8a956780ecc1282ad0f433de7.png\" alt=\"\"></div></sc-if>\n<sc-if value=\"{{c.unit}}\" hint-placeholder-val=\"{{ false }}\"><img class=\"cp-u\" src=\"assets/fa5e3cbdd78f7aaf8d57c5df5fcf3e49.png\" alt=\"\" style=\"bottom: {{unitBottom}}%; opacity: {{c.uop}}\"></sc-if>\n<sc-if value=\"{{c.sold}}\" hint-placeholder-val=\"{{ false }}\"><span class=\"cp-tag\"><img src=\"assets/7f66456749a6e4df8da7e731230831b6.png\" alt=\"\"><span>+3</span></span></sc-if>\n<sc-if value=\"{{c.selected}}\" hint-placeholder-val=\"{{ false }}\"><img class=\"cp-br\" src=\"assets/4fca1f01a79d9b08f87490fc8502f250.png\" alt=\"\" style=\"top: {{brTop}}%\"></sc-if>\n<sc-if value=\"{{c.fx}}\" hint-placeholder-val=\"{{ false }}\"><div class=\"cp-sum\"><img class=\"cp-s1\" src=\"assets/31c182ba77c4d2f61b4e5d68123a11c6.png\" alt=\"\"><img class=\"cp-s2\" src=\"assets/ffeb6de3a93c523977331301fe069d40.png\" alt=\"\"></div></sc-if>\n<sc-if value=\"{{c.sellfx}}\" hint-placeholder-val=\"{{ false }}\"><div class=\"cp-sell\"><img class=\"cp-q1\" src=\"assets/00739ae9ccbd1adc63868e800e23b496.png\" alt=\"\"><img class=\"cp-q2\" src=\"assets/abb4d6e647b8ac939ddec06bcba11ee6.png\" alt=\"\"><img class=\"cp-q3\" src=\"assets/df56de7d679edf3d4a9a438449c42b0a.png\" alt=\"\"><img class=\"cp-q4\" src=\"assets/ac5bf95b163d1c34c9ca8a5ac4604cef.png\" alt=\"\"></div><span class=\"cp-plus\">+3</span></sc-if>\n</button>\n</sc-if>\n</div>\n</sc-for>\n</div>\n<div aria-label=\"무너진 탑\" style=\"position: absolute; left: 75px; top: {{mapTop}}px; width: 150px; height: {{towerH}}px; z-index: 1; pointer-events: none\">\n<img src=\"assets/4dca0c8fe3885ff53aa71f926ad7a765.png\" alt=\"위로 솟은 무너진 탑과 깨진 봉인\" style=\"position: absolute; left: 0; top: -50px; width: 150px; height: 200px; object-fit: fill; image-rendering: pixelated\"></div>\n<sc-if value=\"{{showRange}}\" hint-placeholder-val=\"{{ false }}\"><div style=\"position: absolute; z-index: 5; left: {{rl}}px; top: {{rt}}px; width: {{rd}}px; height: {{rdy}}px; border: 4px dashed #ffffff; border-radius: 50%; background: rgba(255,255,255,0.08); box-sizing: border-box; pointer-events: none\"></div></sc-if>\n<div style=\"position: absolute; top: 6px; left: 36px; right: 36px; display: flex; gap: 24px; justify-content: center; z-index: 6\">\n<div class=\"cp-hud\"><img class=\"cp-pnl\" src=\"assets/f001005e194959490a7ac0baa724c9cc.png\" alt=\"\"><img class=\"cp-ico\" src=\"assets/7f66456749a6e4df8da7e731230831b6.png\" alt=\"마나 결정\"><span class=\"cp-num\">{{mana}}</span></div>\n<div class=\"cp-hud\"><img class=\"cp-pnl\" src=\"assets/f001005e194959490a7ac0baa724c9cc.png\" alt=\"\"><img class=\"cp-ico\" src=\"assets/f0e0f24dec11c951ef51852c78d2a54a.png\" alt=\"남은 시간\"><span class=\"cp-num\">0:42</span></div>\n<div class=\"cp-hud\"><img class=\"cp-pnl\" src=\"assets/f001005e194959490a7ac0baa724c9cc.png\" alt=\"\"><img class=\"cp-ico\" src=\"assets/9cc7833a7f9cdfb3f4bde15f1bbfe2e8.png\" alt=\"적 수\"><span class=\"cp-num\">{{enemyCount}}/100</span></div>\n<div class=\"cp-hud\"><img class=\"cp-pnl\" src=\"assets/f001005e194959490a7ac0baa724c9cc.png\" alt=\"\"><img class=\"cp-ico\" src=\"assets/390f6b934423065a4259825a9f21f064.png\" alt=\"스테이지\"><span class=\"cp-num\">3</span></div>\n</div>\n<div style=\"position: absolute; bottom: 4px; left: 36px; right: 36px; height: 67px; display: flex; gap: 32px; justify-content: center; align-items: center; z-index: 6\">\n<button type=\"button\" class=\"cp-btn\" style=\"width: 160px\"><div class=\"cp-n9\" aria-hidden=\"true\"><img src=\"assets/04265e1fee37e3e06c7e963666a05b62.png\" alt=\"\"><img src=\"assets/98f1df9e5ec07b2ec60434cb20c4aaba.png\" alt=\"\"><img src=\"assets/7bfdcd31b69746337af947f4c5ac8ed4.png\" alt=\"\"><img src=\"assets/69eee1628e7b5a17c9446a39c69ca1f3.png\" alt=\"\"><img src=\"assets/e8105d8b57bc47189659328bf840ec85.png\" alt=\"\"><img src=\"assets/fd2632793128305de6debf770e1c61bf.png\" alt=\"\"><img src=\"assets/2af566b1a750e8feb52313f07c2d9b62.png\" alt=\"\"><img src=\"assets/24a867dbaf80ed0f0b0b9f9d108540c8.png\" alt=\"\"><img src=\"assets/64177e45ba6cc787b28a14db082d9e92.png\" alt=\"\"></div><span class=\"cp-lbl\">조합표</span></button>\n<button type=\"button\" class=\"cp-btn\" style=\"width: 190px\" onClick=\"{{summon}}\"><div class=\"cp-n9\" aria-hidden=\"true\"><img src=\"assets/04265e1fee37e3e06c7e963666a05b62.png\" alt=\"\"><img src=\"assets/98f1df9e5ec07b2ec60434cb20c4aaba.png\" alt=\"\"><img src=\"assets/7bfdcd31b69746337af947f4c5ac8ed4.png\" alt=\"\"><img src=\"assets/69eee1628e7b5a17c9446a39c69ca1f3.png\" alt=\"\"><img src=\"assets/e8105d8b57bc47189659328bf840ec85.png\" alt=\"\"><img src=\"assets/fd2632793128305de6debf770e1c61bf.png\" alt=\"\"><img src=\"assets/2af566b1a750e8feb52313f07c2d9b62.png\" alt=\"\"><img src=\"assets/24a867dbaf80ed0f0b0b9f9d108540c8.png\" alt=\"\"><img src=\"assets/64177e45ba6cc787b28a14db082d9e92.png\" alt=\"\"></div><img src=\"assets/8d28f8fb002e67fb8c663e2f8d8cbd28.png\" alt=\"\" style=\"position: relative; width: 36px; height: 36px; object-fit: contain; image-rendering: pixelated\"><span class=\"cp-lbl\">소환</span></button>\n<button type=\"button\" class=\"{{combineClass}}\" style=\"width: {{combineWidth}}px; opacity: {{combineOpacity}}\" onClick=\"{{tapCombine}}\"><div class=\"cp-n9\" aria-hidden=\"true\"><img src=\"assets/04265e1fee37e3e06c7e963666a05b62.png\" alt=\"\"><img src=\"assets/98f1df9e5ec07b2ec60434cb20c4aaba.png\" alt=\"\"><img src=\"assets/7bfdcd31b69746337af947f4c5ac8ed4.png\" alt=\"\"><img src=\"assets/69eee1628e7b5a17c9446a39c69ca1f3.png\" alt=\"\"><img src=\"assets/e8105d8b57bc47189659328bf840ec85.png\" alt=\"\"><img src=\"assets/fd2632793128305de6debf770e1c61bf.png\" alt=\"\"><img src=\"assets/2af566b1a750e8feb52313f07c2d9b62.png\" alt=\"\"><img src=\"assets/24a867dbaf80ed0f0b0b9f9d108540c8.png\" alt=\"\"><img src=\"assets/64177e45ba6cc787b28a14db082d9e92.png\" alt=\"\"></div><span class=\"cp-lbl\">{{combineLabel}}</span></button>\n<button type=\"button\" class=\"{{sellClass}}\" style=\"width: {{sellWidth}}px; opacity: {{sellOpacity}}\" onClick=\"{{sell}}\"><div class=\"cp-n9\" aria-hidden=\"true\"><img src=\"assets/04265e1fee37e3e06c7e963666a05b62.png\" alt=\"\"><img src=\"assets/98f1df9e5ec07b2ec60434cb20c4aaba.png\" alt=\"\"><img src=\"assets/7bfdcd31b69746337af947f4c5ac8ed4.png\" alt=\"\"><img src=\"assets/69eee1628e7b5a17c9446a39c69ca1f3.png\" alt=\"\"><img src=\"assets/e8105d8b57bc47189659328bf840ec85.png\" alt=\"\"><img src=\"assets/fd2632793128305de6debf770e1c61bf.png\" alt=\"\"><img src=\"assets/2af566b1a750e8feb52313f07c2d9b62.png\" alt=\"\"><img src=\"assets/24a867dbaf80ed0f0b0b9f9d108540c8.png\" alt=\"\"><img src=\"assets/64177e45ba6cc787b28a14db082d9e92.png\" alt=\"\"></div><span class=\"cp-lbl\">{{sellLabel}}</span></button>\n<div aria-label=\"취소 버튼 자리\" style=\"width: 120px; height: 64px; display: flex\"><sc-if value=\"{{showCancel}}\" hint-placeholder-val=\"{{ false }}\"><button type=\"button\" class=\"cp-btn\" style=\"width: 120px\" onClick=\"{{cancel}}\"><div class=\"cp-n9\" aria-hidden=\"true\"><img src=\"assets/04265e1fee37e3e06c7e963666a05b62.png\" alt=\"\"><img src=\"assets/98f1df9e5ec07b2ec60434cb20c4aaba.png\" alt=\"\"><img src=\"assets/7bfdcd31b69746337af947f4c5ac8ed4.png\" alt=\"\"><img src=\"assets/69eee1628e7b5a17c9446a39c69ca1f3.png\" alt=\"\"><img src=\"assets/e8105d8b57bc47189659328bf840ec85.png\" alt=\"\"><img src=\"assets/fd2632793128305de6debf770e1c61bf.png\" alt=\"\"><img src=\"assets/2af566b1a750e8feb52313f07c2d9b62.png\" alt=\"\"><img src=\"assets/24a867dbaf80ed0f0b0b9f9d108540c8.png\" alt=\"\"><img src=\"assets/64177e45ba6cc787b28a14db082d9e92.png\" alt=\"\"></div><span class=\"cp-lbl\">취소</span></button></sc-if></div>\n</div>\n</div>\n<div style=\"display: flex; gap: 16px; align-items: center\">\n<button onClick=\"{{toggleView}}\" style=\"font-family: inherit; font-size: 15px; padding: 8px 16px; border-radius: 8px; border: 2px solid #1d4ed8; background: #ffffff; cursor: pointer; min-height: 44px\">{{viewLabel}}</button>\n<button onClick=\"{{resetUnits}}\" style=\"font-family: inherit; font-size: 15px; padding: 8px 16px; border-radius: 8px; border: 1px solid #9ca3af; background: #ffffff; cursor: pointer; min-height: 44px\">유닛 처음 상태로</button>\n<button onClick=\"{{bossShow}}\" style=\"font-family: inherit; font-size: 15px; padding: 8px 16px; border-radius: 8px; border: 1px dashed #b91c1c; background: #fff5f5; color: #991b1b; cursor: pointer; min-height: 44px\">보스 등장 (미리보기용 · 게임에 없는 버튼)</button>\n<p style=\"margin: 0; font-size: 15px; color: #374151\">{{hint}}</p>\n</div>\n</div>",
+(function () {
+const COLS = 14, ROWS = 9, L = 1, R = COLS - 2;
+const RING = [];
+for (let c = L; c <= R; c++) RING.push([1, c]);
+for (let r = 2; r <= 7; r++) RING.push([r, R]);
+for (let c = R - 1; c >= L; c--) RING.push([7, c]);
+for (let r = 6; r >= 2; r--) RING.push([r, L]);
+const RING_IDX = {};
+RING.forEach((p, i) => { RING_IDX[p[0] + ',' + p[1]] = i; });
+const T = {
+  grass: ['assets/612098103dc3f949e1c56c909b32a8e3.png', 'assets/e8d775f2cf23afc085e1506ea211ff29.png', 'assets/0debfa33f3501379e3fd1875c115b2ac.png'],
+  pathV: 'assets/b84a7a6f1f6402fc894b925cea3f2181.png',
+  corner: 'assets/f97809506292e91316ca473f6c38dca0.png',
+  slot: 'assets/6bd034ff7ef0c8ce62f1507b772ad0fc.png',
+  decor: ['assets/7e5c112f7a2bb620133c1fdc553a3484.png', 'assets/baf027319a6f7fecbff3437f43baf48a.png', 'assets/6840519a4aa194028fe347331ac2bdac.png', 'assets/ad279f41b8220f8f668f243f902b0c70.png', null, 'assets/e320c4f4dc840b9611689d31254eb016.png', 'assets/89906e66382db0d245d0cb45a0ab2ca1.png', 'assets/a4660434ec41ca9916b0adf8c6a53acd.png', null]
+};
+const START = [0, 1, 2, 4, 10, 11, 13, 21, 22, 30, 33];
+class Component extends DCLogic {
+  constructor(p) { super(p); this.state = { tick: 0 }; }
+  componentDidMount() { this.timer = setInterval(() => this.setState({ tick: (this.state.tick || 0) + 1 }), 450); }
+  componentWillUnmount() { clearInterval(this.timer); clearTimeout(this.bossT); clearTimeout(this.bossT2); }
+  renderVals() {
+    const s = this.state || {};
+    const t = s.tick || 0;
+    const combine = !!s.combine;
+    const sellMode = !!s.sellMode;
+    const sellPicks = s.sellPicks || [];
+    const sel = s.sel ?? null;
+    const picks = s.picks || [];
+    const units = s.units || START;
+    const fxSlot = s.fx ?? null;
+    const view34 = s.view34 !== false;
+    const rowH = 75, mapTop = 0;
+    const occupied = {};
+    let count = 0;
+    for (let k = 0; k < 8; k++) { const pos = t - k * 3; if (pos >= 0) { occupied[pos % RING.length] = true; count++; } }
+    const bossRi = s.bossAt != null ? ((Math.max(0, t - s.bossAt)) % (RING.length - 1)) + 1 : -1;
+    const cells = [];
+    for (let r = 0; r < ROWS; r++) {
+      for (let c = 0; c < COLS; c++) {
+        const ri = RING_IDX[r + ',' + c];
+        const isPath = ri !== undefined;
+        const isSlot = r >= 2 && r <= 6 && c >= L + 1 && c <= R - 1;
+        const side = (c === 0 || c === COLS - 1);
+        const underTower = r <= 1 && c <= 1;
+        let src = T.grass[(r * 7 + c * 3) % 3];
+        let rot = 0;
+        if (ri === 0) src = T.corner;
+        else if (isPath) {
+          if (r === 1 && c === R) { src = T.corner; rot = 90; }
+          else if (r === 7 && c === R) { src = T.corner; rot = 180; }
+          else if (r === 7 && c === L) { src = T.corner; rot = 270; }
+          else if (r === 1 || r === 7) { src = T.pathV; rot = 90; }
+          else src = T.pathV;
+        } else if (isSlot) src = view34 ? 'assets/bd6376563e36dfcd538aafeca3623f60.png' : T.slot;
+        else if (underTower) src = (r + c) % 2 === 0 ? T.decor[1] : T.decor[5];
+        else if (side) { const d = T.decor[(r + (c === 0 ? 0 : 4)) % T.decor.length]; if (d) src = d; }
+        const si = isSlot ? (r - 2) * 10 + (c - 2) : -1;
+        const unit = isSlot && units.includes(si);
+        cells.push({
+          src, rot, ov: isSlot ? 'visible' : 'hidden', fit: isSlot ? 'fill' : 'cover', bg: T.grass[(r * 7 + c * 3) % 3], face: false,
+          iw: (rot === 90 || rot === 270) ? rowH : 75, ih: (rot === 90 || rot === 270) ? 75 : rowH,
+          il: (rot === 90 || rot === 270) ? (75 - rowH) / 2 : 0, it: (rot === 90 || rot === 270) ? (rowH - 75) / 2 : 0,
+          sunk: false, shadow: view34 && unit,
+          enemy: isPath && ri !== 0 && !!occupied[ri] && ri !== bossRi,
+          boss: isPath && ri === bossRi,
+          slot: isSlot, unit,
+          label: unit ? '검사' : '빈 칸',
+          selected: !combine && sel === si,
+          picked: combine && picks.includes(si),
+          fx: fxSlot === si && isSlot,
+          sellfx: isSlot && (s.sellFx || []).includes(si),
+          sold: sellMode && sellPicks.includes(si),
+          uop: (sellMode && sellPicks.includes(si)) ? 0.55 : 1,
+          moved: isSlot && (s.moved || []).includes(si),
+          tap: () => {
+            if (sellMode) { if (!unit) return; this.setState({ sellPicks: sellPicks.includes(si) ? sellPicks.filter((p) => p !== si) : sellPicks.concat(si), msg: null }); return; }
+            if (combine) {
+              if (!unit) return;
+              if (picks.includes(si)) this.setState({ picks: picks.filter((p) => p !== si), msg: null });
+              else this.setState({ picks: picks.concat(si), msg: null });
+            } else {
+              if (sel === null) { if (unit) this.setState({ sel: si, msg: null }); return; }
+              if (sel === si) { this.setState({ sel: null, msg: null }); return; }
+              const next = unit ? units : units.map((u) => (u === sel ? si : u));
+              this.setState({ units: next, sel: null, moved: [sel, si], msg: unit ? '자리 바꿈: 고른 유닛과 누른 유닛의 칸을 서로 바꿈' : '이동: 고른 유닛을 누른 빈 칸으로 옮김' });
+              setTimeout(() => this.setState({ moved: null }), 500);
+            }
+          }
+        });
+      }
+    }
+    let showRange = false, rl = 0, rt = 0, rd = 0, rdy = 0, showSell = false, sellL = 0, sellT = 0;
+    const mana = s.mana ?? 18;
+    let hint = '일반 모드: 유닛을 누르면 꺾쇠와 사거리 원. 아래 조합 버튼을 눌러 조합 모드로';
+    if (!combine && sel !== null) {
+      const cx = 75 + (2 + sel % 10) * 75 + 37.5, cy = mapTop + (2 + Math.floor(sel / 10)) * rowH + rowH / 2, rad = 1.5 * 75, rady = view34 ? rad / 1.4 : rad;
+      showRange = true; rl = Math.round(cx - rad); rt = Math.round(cy - rady); rd = Math.round(rad * 2); rdy = Math.round(rady * 2);
+      hint = '검사 선택 · 사거리 1.5칸 · 빈 칸을 누르면 이동, 다른 유닛을 누르면 자리 바꿈, 자기 자신을 다시 누르면 선택 해제 · 판매 버튼을 누르면 이 유닛을 고른 채로 판매 모드';
+      const col = 2 + sel % 10, row = 2 + Math.floor(sel / 10);
+      showSell = true; sellL = col >= 11 ? 75 + col * 75 - 132 : 75 + (col + 1) * 75 + 4; sellT = mapTop + row * rowH - 12;
+    }
+    if (!combine && s.msg) hint = s.msg;
+    if (sellMode) hint = s.msg || '판매 모드: 팔 유닛을 누르면 머리 위에 +3 표시(다시 누르면 취소). 판매하기를 누르면 고른 유닛을 한번에 판매';
+    if (combine) hint = s.msg || '조합 모드: 조합 버튼에 고른 개수 표시. 유닛을 누르면 발판 (개수 제한 없음, 조합은 2개 이상부터)';
+    return {
+      cells, combine, showRange, rl, rt, rd, rdy, hint, enemyCount: count,
+      mana, showSell, sellL, sellT, sellOpacity: combine ? 0.45 : 1, combineOpacity: sellMode ? 0.45 : 1,
+      showCancel: combine || sellMode, sellClass: sellMode ? 'cp-btn cp-on2' : 'cp-btn', sellWidth: sellMode ? 200 : 150,
+      sellLabel: sellMode ? '판매하기 +' + sellPicks.length * 3 : '판매',
+      sell: () => {
+        if (combine) return;
+        if (!sellMode) { this.setState({ sellMode: true, sellPicks: (sel !== null && units.includes(sel)) ? [sel] : [], sel: null, msg: null }); return; }
+        if (!sellPicks.length) { this.setState({ msg: '팔 유닛을 1개 이상 고르세요 (게임에서는 토스트 메시지)' }); return; }
+        const n = sellPicks.length;
+        this.setState({ units: units.filter((u) => !sellPicks.includes(u)), mana: mana + n * 3, sellFx: sellPicks, sellMode: false, sellPicks: [], msg: n + '개 판매: 고른 칸마다 판매 이펙트 + "+3", 마나 결정 +' + n * 3 });
+        setTimeout(() => this.setState({ sellFx: null }), 800);
+      },
+      sellOld: () => {
+        if (combine || sel === null) return;
+        this.setState({ units: units.filter((u) => u !== sel), sel: null, mana: mana + 3, sellFx: sel, msg: '판매: 유닛이 사라지고 그 칸에서 판매 이펙트 4프레임 + "+3" 글자, 위쪽 마나 결정 +3' });
+        setTimeout(() => this.setState({ sellFx: null }), 800);
+      },
+      view34, rowH, mapTop, unitBottom: view34 ? 18 : -14, brTop: view34 ? 17 : 50, padBottom: view34 ? 29.5 : -14, mapH: rowH * 9, faceTop: mapTop + 7 * rowH, towerH: rowH * 2,
+      fronts: Array.from({ length: 10 }, (_, i) => ({ i })),
+      viewLabel: view34 ? '배치 영역: 한 단 올림 (정사각 칸)' : '배치 영역: 지금 평평 (75×75칸)',
+      toggleView: () => this.setState({ view34: !view34, sel: null }),
+      combineClass: combine ? 'cp-btn cp-on' : 'cp-btn',
+      combineWidth: combine ? 210 : 160,
+      combineLabel: combine ? '조합하기' : '조합',
+      tapCombine: () => {
+        if (sellMode) return;
+        if (!combine) this.setState({ combine: true, sel: null, picks: [], msg: null });
+        else this.setState({ msg: picks.length < 2 ? '재료를 2개 이상 고르세요 (게임에서는 토스트 메시지)' : picks.length + '개로 조합 시도 → 조합 이펙트 후 결과 칸에 상위 직업' });
+      },
+      cancel: () => this.setState({ sellMode: false, sellPicks: [], combine: false, sel: null, picks: [], msg: null }),
+      summon: () => {
+        if (combine || sellMode || fxSlot !== null) return;
+        let empty = -1;
+        for (let i = 0; i < 50; i++) { if (!units.includes(i)) { empty = i; break; } }
+        if (empty < 0) { this.setState({ msg: '빈 칸이 없어 소환할 수 없어요 (게임에서는 토스트 메시지)' }); return; }
+        this.setState({ fx: empty, msg: '소환: 첫 번째 빈 칸에 차원문 2프레임 → 직업 등장' });
+        setTimeout(() => this.setState({ units: units.concat(empty) }), 300);
+        setTimeout(() => this.setState({ fx: null }), 600);
+      },
+      boss: !!this.state.boss,
+      bossShow: () => {
+        clearTimeout(this.bossT); clearTimeout(this.bossT2);
+        this.setState({ boss: false });
+        this.bossT2 = setTimeout(() => {
+          this.setState({ boss: true, bossAt: this.state.tick });
+          this.bossT = setTimeout(() => this.setState({ boss: false }), 3300);
+        }, 30);
+      },
+      resetUnits: () => this.setState({ bossAt: null, sellMode: false, sellPicks: [], mana: null, sellFx: null, units: null, sel: null, picks: [], fx: null, msg: null, combine: false })
+    };
+  }
+}
+return Component;
+})(), {});
+DC.mount(document.getElementById('root'), "CombinePreview", {});
+</script>
+</body>
+</html>

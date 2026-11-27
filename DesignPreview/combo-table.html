@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>조합표 팝업 (단독)</title>
+<style>html{background:#e9ebef}body{margin:0}.board{width:max-content;margin:0 auto}</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&amp;display=swap">
+<style>
+body{margin:0}
+.ct-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:fill;image-rendering:pixelated;pointer-events:none}
+.n9{position:absolute;inset:0;display:grid;overflow:hidden;pointer-events:none}
+.n9 img{width:100%;height:100%;min-width:0;min-height:0;display:block;object-fit:fill}
+.n9.k4{grid-template-columns:26px minmax(0,1fr) 26px;grid-template-rows:26px minmax(0,1fr) 26px}
+.n9.k3{grid-template-columns:19px minmax(0,1fr) 19px;grid-template-rows:19px minmax(0,1fr) 19px}
+.n9.ks{grid-template-columns:22px minmax(0,1fr) 22px;grid-template-rows:22px minmax(0,1fr) 22px}
+.n9.k2{grid-template-columns:13px minmax(0,1fr) 13px;grid-template-rows:13px minmax(0,1fr) 13px}
+.ct-sym{width:26px;height:26px;object-fit:contain;image-rendering:pixelated;flex:none}
+.ct-txt{position:relative;color:#f3e6d0;font-weight:700;text-shadow:2px 2px 0 #1d140d}
+</style>
+</head>
+<body>
+<div class="board" id="root"></div>
+<script src="dc-lite.js"></script>
+<script>
+DC.register("ComboTable", "<div style=\"position: relative; width: 1128px; height: 487px; font-family: 'Noto Sans KR', sans-serif; color: #f3e6d0\">\n<div class=\"n9 k4\" aria-hidden=\"true\"><img src=\"assets/9818b90afd0e88fefb94f10adf1a50bd.png\" alt=\"\"><img src=\"assets/a264396e7866bb71c46cbd1c3984a236.png\" alt=\"\"><img src=\"assets/ab7ced81a90799052754fd26db030b55.png\" alt=\"\"><img src=\"assets/ddd50d27eae70a3aa3a964a7563b6d9b.png\" alt=\"\"><img src=\"assets/abb4733b1c5a56d4c1530d3c31b514c9.png\" alt=\"\"><img src=\"assets/817c2a067932ceae9b107fce728db4f3.png\" alt=\"\"><img src=\"assets/e66e42c6265fcda4cf76d48f3f7c971a.png\" alt=\"\"><img src=\"assets/4a6756b4a8b74236d3cd0d92438697ff.png\" alt=\"\"><img src=\"assets/1dce55844426d452a4ef7fd7d584ca41.png\" alt=\"\"></div>\n<div style=\"position: absolute; inset: 26px 34px 34px 34px; display: flex; flex-direction: column; gap: 8px\">\n<div style=\"display: flex; align-items: center; gap: 12px; height: 48px\">\n<h2 class=\"ct-txt\" style=\"margin: 0; font-size: 22px; color: #ffe2a8\">조합표</h2>\n<sc-if value=\"{{hasMat}}\" hint-placeholder-val=\"{{ false }}\">\n<button type=\"button\" onClick=\"{{clearMat}}\" style=\"position: relative; height: 44px; padding: 0 18px; background: none; border: 0; font: inherit; cursor: pointer; display: flex; align-items: center; gap: 6px\"><div class=\"n9 k2\" aria-hidden=\"true\"><img src=\"assets/e7b431579d86043f19c65ba0b0f65513.png\" alt=\"\"><img src=\"assets/a264396e7866bb71c46cbd1c3984a236.png\" alt=\"\"><img src=\"assets/1945a39e7332f47af214eeefa1c8b62b.png\" alt=\"\"><img src=\"assets/ddd50d27eae70a3aa3a964a7563b6d9b.png\" alt=\"\"><img src=\"assets/a207a5b95ce2faa7f5a1035acef94550.png\" alt=\"\"><img src=\"assets/817c2a067932ceae9b107fce728db4f3.png\" alt=\"\"><img src=\"assets/c94cf9cd4a9a63c54e69acc587672dd4.png\" alt=\"\"><img src=\"assets/faf808eff411cf16a6b246ceb71948df.png\" alt=\"\"><img src=\"assets/4372f5839483f4c47963b3a09c18e268.png\" alt=\"\"></div><span class=\"ct-txt\" style=\"font-size: 14px\">재료: {{matName}}</span><img src=\"assets/e08d264fbe2dfc5e89b1b8f1aa9bc235.png\" alt=\"해제\" style=\"position: relative; width: 14px; height: 14px; object-fit: contain; image-rendering: pixelated\"></button>\n</sc-if>\n<span style=\"font-size: 12px; color: #c9b08a\">예시 데이터 · 직업 얼굴은 자리 표시</span>\n<button type=\"button\" onClick=\"{{close}}\" aria-label=\"닫기\" style=\"position: relative; margin-left: auto; width: 48px; height: 48px; padding: 0; background: none; border: 0; cursor: pointer; display: flex; align-items: center; justify-content: center\"><img class=\"ct-bg\" src=\"assets/9f3bc7dda8d92866659c533d21430a73.png\" alt=\"\"><img src=\"assets/e08d264fbe2dfc5e89b1b8f1aa9bc235.png\" alt=\"\" style=\"position: relative; width: 20px; height: 20px; object-fit: contain; image-rendering: pixelated\"></button>\n</div>\n<div style=\"flex: 1; display: flex; gap: 10px; min-height: 0\">\n<div style=\"width: 120px; display: flex; flex-direction: column; gap: 8px\" role=\"tablist\">\n<sc-for list=\"{{tabs}}\" as=\"t\" hint-placeholder-count=\"4\">\n<button type=\"button\" role=\"tab\" onClick=\"{{t.pick}}\" style=\"{{t.style}}\"><div class=\"n9 ks\" style=\"{{t.frame}}\" aria-hidden=\"true\"><img src=\"assets/04265e1fee37e3e06c7e963666a05b62.png\" alt=\"\"><img src=\"assets/98f1df9e5ec07b2ec60434cb20c4aaba.png\" alt=\"\"><img src=\"assets/7bfdcd31b69746337af947f4c5ac8ed4.png\" alt=\"\"><img src=\"assets/69eee1628e7b5a17c9446a39c69ca1f3.png\" alt=\"\"><img src=\"assets/e8105d8b57bc47189659328bf840ec85.png\" alt=\"\"><img src=\"assets/fd2632793128305de6debf770e1c61bf.png\" alt=\"\"><img src=\"assets/2af566b1a750e8feb52313f07c2d9b62.png\" alt=\"\"><img src=\"assets/24a867dbaf80ed0f0b0b9f9d108540c8.png\" alt=\"\"><img src=\"assets/64177e45ba6cc787b28a14db082d9e92.png\" alt=\"\"></div><span style=\"{{t.tint}}\"></span><span class=\"ct-txt\" style=\"font-size: 16px\">{{t.label}}</span></button>\n</sc-for>\n</div>\n<div style=\"flex: 1; overflow-y: auto; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-content: start; gap: 8px; padding-right: 4px\">\n<sc-for list=\"{{rows}}\" as=\"r\" hint-placeholder-count=\"4\">\n<div style=\"position: relative; height: 92px; display: flex; align-items: center; gap: 8px; padding: 0 20px 4px 30px\">\n<div class=\"n9 k2\" aria-hidden=\"true\"><img src=\"assets/e7b431579d86043f19c65ba0b0f65513.png\" alt=\"\"><img src=\"assets/a264396e7866bb71c46cbd1c3984a236.png\" alt=\"\"><img src=\"assets/1945a39e7332f47af214eeefa1c8b62b.png\" alt=\"\"><img src=\"assets/ddd50d27eae70a3aa3a964a7563b6d9b.png\" alt=\"\"><img src=\"assets/a207a5b95ce2faa7f5a1035acef94550.png\" alt=\"\"><img src=\"assets/817c2a067932ceae9b107fce728db4f3.png\" alt=\"\"><img src=\"assets/c94cf9cd4a9a63c54e69acc587672dd4.png\" alt=\"\"><img src=\"assets/faf808eff411cf16a6b246ceb71948df.png\" alt=\"\"><img src=\"assets/4372f5839483f4c47963b3a09c18e268.png\" alt=\"\"></div>\n<span style=\"{{r.strip}}\"></span>\n<div style=\"position: relative; display: flex; flex-direction: column; align-items: center; gap: 2px; width: 52px\">\n<sc-if value=\"{{r.locked}}\" hint-placeholder-val=\"{{ false }}\"><div style=\"width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; background: #1a1a1f; border: 3px solid #1d140d\"><img class=\"ct-sym\" src=\"assets/36a4d0905d9f222f1992cfab2e4ab039.png\" alt=\"미발견\"></div></sc-if>\n<sc-if value=\"{{r.known}}\" hint-placeholder-val=\"{{ true }}\"><div style=\"{{r.resultStyle}}\">{{r.resultInitial}}</div></sc-if>\n<span class=\"ct-txt\" style=\"font-size: 12px; white-space: nowrap\">{{r.resultName}}</span>\n</div>\n<img class=\"ct-sym\" src=\"assets/4b3317dc49d74d268ce205aa47ccd210.png\" alt=\"재료에서\" style=\"position: relative\">\n<div style=\"position: relative; display: flex; align-items: flex-start; gap: 3px; flex: 1\">\n<sc-for list=\"{{r.mats}}\" as=\"m\" hint-placeholder-count=\"2\">\n<sc-if value=\"{{m.notFirst}}\" hint-placeholder-val=\"{{ false }}\"><img class=\"ct-sym\" src=\"assets/79da63b46547562624153d86f533e190.png\" alt=\"더하기\" style=\"width: 18px; height: 18px; margin-top: 12px\"></sc-if>\n<button type=\"button\" onClick=\"{{m.pick}}\" aria-label=\"{{m.name}}가 들어가는 조합 보기\" style=\"display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 0; background: none; border: 0; font: inherit; cursor: pointer\">\n<sc-if value=\"{{m.hidden}}\" hint-placeholder-val=\"{{ false }}\"><span style=\"width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; background: #1a1a1f; border: 3px solid #1d140d\"><img src=\"assets/36a4d0905d9f222f1992cfab2e4ab039.png\" alt=\"\" style=\"width: 20px; height: 20px; object-fit: contain; image-rendering: pixelated\"></span></sc-if>\n<sc-if value=\"{{m.known}}\" hint-placeholder-val=\"{{ true }}\"><span style=\"{{m.style}}\">{{m.initial}}</span></sc-if>\n<span class=\"ct-txt\" style=\"font-size: 11px; white-space: nowrap\">{{m.name}}</span>\n</button>\n</sc-for>\n</div>\n</div>\n</sc-for>\n<sc-if value=\"{{empty}}\" hint-placeholder-val=\"{{ false }}\">\n<p class=\"ct-txt\" style=\"grid-column: 1 / -1; margin: 24px 0; text-align: center; font-size: 14px\">조건에 맞는 조합이 없어요</p>\n</sc-if>\n</div>\n</div>\n</div>\n</div>",
+(function () {
+const GRADE = {
+  adv: { label: '고급', color: '#3f9a3a' },
+  rare: { label: '희귀', color: '#3a6fd0' },
+  hero: { label: '영웅', color: '#8b4fd0' },
+  hidden: { label: '히든', color: '#6b6b78' }
+};
+const NAME = { swordsman: '검사', archer: '궁수', farmer: '농부', miner: '광부', knight: '기사', sniper: '저격수', bard: '음유시인', chef: '요리사', firefighter: '소방관', blacksmith: '대장장이', magician: '마술사', librarian: '사서' };
+const COLOR = { swordsman: '#8a8f86', archer: '#8a8f86', farmer: '#8a8f86', miner: '#8a8f86', knight: '#3f9a3a', sniper: '#3f9a3a', bard: '#3f9a3a', chef: '#3f9a3a', firefighter: '#3f9a3a', blacksmith: '#3a6fd0', magician: '#3a6fd0', librarian: '#3a6fd0' };
+const RECIPES = [
+  { grade: 'adv', result: 'knight', mats: ['swordsman', 'swordsman'] },
+  { grade: 'adv', result: 'sniper', mats: ['archer', 'archer'] },
+  { grade: 'adv', result: 'bard', mats: ['archer', 'farmer'] },
+  { grade: 'adv', result: 'chef', mats: ['farmer', 'miner'] },
+  { grade: 'adv', result: 'firefighter', mats: ['miner', 'swordsman'] },
+  { grade: 'rare', result: 'blacksmith', mats: ['knight', 'miner'] },
+  { grade: 'rare', result: 'magician', mats: ['bard', 'archer', 'swordsman'] },
+  { grade: 'rare', result: 'librarian', mats: ['bard', 'chef'] },
+  { grade: 'hero', result: null, mats: [null, null, null] },
+  { grade: 'hidden', result: null, mats: [null, null, null, null] }
+];
+class Component extends DCLogic {
+  constructor(p) { super(p); this.state = { tab: 'adv', mat: null }; }
+  renderVals() {
+    const s = this.state;
+    const tabs = Object.keys(GRADE).map((k) => {
+      const on = !s.mat && s.tab === k;
+      return {
+        label: GRADE[k].label,
+        pick: () => this.setState({ tab: k, mat: null }),
+        style: 'position: relative; height: 56px; padding: 0; background: none; border: 0; font: inherit; cursor: pointer; display: flex; align-items: center; justify-content: center; transform: ' + (on ? 'translateX(6px)' : 'none') + '; box-shadow: ' + (on ? '0 0 0 3px #f2c230, 0 0 12px 2px rgba(242, 194, 48, 0.55)' : 'none'),
+        frame: on ? 'filter: brightness(1.25) saturate(1.15)' : 'filter: brightness(0.75)',
+        tint: 'position: absolute; inset: 11px 13px 11px 13px; background: ' + GRADE[k].color + '; opacity: ' + (on ? '0.7' : '0.18')
+      };
+    });
+    const list = RECIPES.filter((r) => s.mat ? (r.result && r.mats.indexOf(s.mat) >= 0) : r.grade === s.tab);
+    const rows = list.map((r) => {
+      const locked = !r.result;
+      return {
+        locked, known: !locked,
+        resultName: locked ? '???' : NAME[r.result],
+        resultInitial: locked ? '' : NAME[r.result].slice(0, 1),
+        resultStyle: 'width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 18px; color: #fff; border: 3px solid #1d140d; background: ' + (locked ? '#1a1a1f' : COLOR[r.result]),
+        strip: 'position: absolute; left: 16px; top: 14px; bottom: 16px; width: 6px; background: ' + GRADE[r.grade].color,
+        mats: r.mats.map((m, i) => ({
+          notFirst: i > 0,
+          hidden: !m, known: !!m,
+          name: m ? NAME[m] : '???',
+          initial: m ? NAME[m].slice(0, 1) : '',
+          pick: () => { if (m) this.setState({ mat: m }); },
+          style: 'width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 15px; color: #fff; border: 3px solid #1d140d; background: ' + (m ? COLOR[m] : '#1a1a1f')
+        }))
+      };
+    });
+    return {
+      tabs, rows, empty: rows.length === 0,
+      hasMat: !!s.mat, matName: s.mat ? NAME[s.mat] : '',
+      clearMat: () => this.setState({ mat: null }),
+      close: () => { if (this.props.onClose) this.props.onClose(); }
+    };
+  }
+}
+return Component;
+})(), {});
+DC.mount(document.getElementById('root'), "ComboTable", {});
+</script>
+</body>
+</html>
