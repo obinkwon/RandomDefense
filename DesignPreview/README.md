@@ -54,7 +54,27 @@ Claude Code 데스크톱 앱에서는 `.claude/launch.json`의 `design-preview` 
 | `enemy-slime-king.html` | 슬라임 킹 (보스) · 기본과 이동 모션 (좌·우) | 정적 |
 | `enemy-template.html` | 적 유닛 참고 템플릿 | 정적 |
 | `dc-lite.js` | 움직이는 미리보기용 작은 런타임 | |
-| `assets/` | 보드에 쓰인 이미지 195장 (파일 이름은 캔버스의 에셋 id) | |
+| `assets/` | 보드에 쓰인 이미지 163장 (이름 규칙은 아래) | |
+
+### 이미지 파일 이름
+
+`assets/`의 이미지는 `<분류>_<이름>.png`로 지었다. 같은 그림이 여러 보드에 쓰이면 파일 하나를 같이 쓴다.
+
+| 앞머리 | 내용 | 예 |
+| --- | --- | --- |
+| `map_` | 맵 타일, 맵 오브젝트, 맵 시안 | `map_field_1`, `map_path_corner`, `map_concept_v4` |
+| `ui_` | 패널, 9분할 조각, UI 시안 | `ui_counter_panel`, `ui_frame_panel_tl`, `ui_concept_v4` |
+| `icon_` | UI 아이콘 | `icon_crystal`, `icon_pause` |
+| `symbol_` | 조합표 기호 | `symbol_plus`, `symbol_question` |
+| `fx_` | 이펙트 프레임과 시트 | `fx_sell_1`, `fx_boss_crack_sheet` |
+| `unit_` | 직업 캐릭터 | `unit_archer_attack2_left`, `unit_base_body_right` |
+| `enemy_` | 적 캐릭터 | `enemy_slime_king_move3` |
+| `ref_` | 참고 템플릿에 쓰는 기준 이미지 | `ref_swordsman_idle`, `ref_base_body` |
+
+- 9분할 조각은 끝에 위치를 붙인다: `tl` `t` `tr` `l` `c` `r` `bl` `b` `br` (왼쪽 위부터 오른쪽 아래까지).
+- `_left`는 왼쪽을 보는 반전본, `_sheet`는 2×2 4프레임이 한 장에 든 원본, `_old`는 대체된 이전 시안, `_source`는 자르기 전 원본이다.
+- 시안 버전은 `_v1`~`_v4`로 붙인다.
+- 게임에 들어간 파일(`Assets/Art/Sprites/`)과는 따로다. 이름이 비슷해도 크기나 배경이 다를 수 있다.
 
 ## 원본이 바뀌었을 때
 
