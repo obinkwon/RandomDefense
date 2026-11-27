@@ -10,6 +10,7 @@ public static class UiPrefabBuilder
     private const string SpriteDir = "Assets/Art/Sprites/UI/";
     private const string PrefabDir = "Assets/Prefabs/UI/";
     private const string FontPath = "Assets/Fonts/NotoSansKR-Regular SDF.asset";
+    private const string CounterPanel = "counter_panel";
 
     [MenuItem("RandomDefense/UI 프리팹 만들기")]
     internal static void Build()
@@ -20,11 +21,16 @@ public static class UiPrefabBuilder
         foreach (string name in new[] { "play", "pause", "fast", "normal_speed", "settings", "close" })
             Save(MakeButton("btn_" + name), "Button_" + Pascal(name));
 
-        Save(MakeButton("btn_summon"), "Button_Summon");
+        // 소환 버튼: 빈 카운터 패널 + 가운데 차원문 아이콘
+        GameObject summon = MakeImage(CounterPanel);
+        summon.GetComponent<Image>().preserveAspect = true;
+        summon.AddComponent<Button>();
+        AddIcon(summon, "icon_summon", new Vector2(0.3f, 0.14f), new Vector2(0.7f, 0.86f));
+        Save(summon, "Button_Summon");
 
-        // 카운터: 왼쪽 아이콘 옆에 숫자
+        // 카운터: 빈 카운터 패널 + 왼쪽 아이콘 + 오른쪽 숫자
         foreach (string name in new[] { "crystal", "barrier", "wave", "time", "monster" })
-            Save(MakeCounter("counter_" + name), "Counter_" + Pascal(name));
+            Save(MakeCounter("icon_" + name), "Counter_" + Pascal(name));
 
         // 패널: 9-slice로 늘려 쓴다
         foreach (string name in new[] { "panel_wide", "panel_long", "panel_steel" })
@@ -60,15 +66,34 @@ public static class UiPrefabBuilder
         return go;
     }
 
-    private static GameObject MakeCounter(string spriteName)
+    // 패널 위에 아이콘을 얹는다. 32×32 아이콘을 anchor 영역에 맞춰 키운다 (Point 필터라 픽셀이 유지됨)
+    private static void AddIcon(GameObject panel, string iconName, Vector2 anchorMin, Vector2 anchorMax)
     {
-        GameObject go = MakeImage(spriteName);
+        GameObject icon = MakeImage(iconName);
+        icon.name = "Icon";
+        icon.transform.SetParent(panel.transform, false);
+        Image image = icon.GetComponent<Image>();
+        image.preserveAspect = true;
+        image.raycastTarget = false;
+        RectTransform rect = icon.GetComponent<RectTransform>();
+        rect.anchorMin = anchorMin;
+        rect.anchorMax = anchorMax;
+        rect.offsetMin = Vector2.zero;
+        rect.offsetMax = Vector2.zero;
+    }
+
+    private static GameObject MakeCounter(string iconName)
+    {
+        GameObject go = MakeImage(CounterPanel);
         go.GetComponent<Image>().preserveAspect = true;
+
+        // 왼쪽 40%: 아이콘
+        AddIcon(go, iconName, new Vector2(0.07f, 0.18f), new Vector2(0.38f, 0.82f));
 
         GameObject label = new GameObject("Value", typeof(RectTransform));
         label.transform.SetParent(go.transform, false);
 
-        // 왼쪽 40%는 아이콘 자리, 나머지에 숫자
+        // 나머지: 숫자
         RectTransform rect = label.GetComponent<RectTransform>();
         rect.anchorMin = new Vector2(0.4f, 0.15f);
         rect.anchorMax = new Vector2(0.92f, 0.85f);

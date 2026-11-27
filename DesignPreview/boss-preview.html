@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>보스 등장 연출 미리보기</title>
+<style>html{background:#e9ebef}body{margin:0}.board{width:max-content;margin:0 auto}</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&amp;display=swap">
+<style>
+body{margin:0}
+.bp-band{position:absolute;left:0;right:0;height:7%;background:repeating-linear-gradient(-45deg,#d8321f 0 14px,#151515 14px 28px);border-top:3px solid #151515;border-bottom:3px solid #151515}
+.bp-top{top:0;animation:bpt 4s steps(1) infinite}.bp-bot{bottom:0;animation:bpb 4s steps(1) infinite}
+@keyframes bpt{0%{transform:translateY(-110%)}5%{transform:translateY(-50%)}8%{transform:none;opacity:1}20%,40%,60%{opacity:.35}30%,50%,70%{opacity:1}85%{transform:none;opacity:1}92%,100%{transform:translateY(-110%)}}
+@keyframes bpb{0%{transform:translateY(110%)}5%{transform:translateY(50%)}8%{transform:none;opacity:1}20%,40%,60%{opacity:.35}30%,50%,70%{opacity:1}85%{transform:none;opacity:1}92%,100%{transform:translateY(110%)}}
+.bp-crack{position:absolute;left:50%;top:46%;width:120px;height:300px;margin-left:-60px;margin-top:-150px;transform:scale(0,0);animation:bpc 4s steps(1) infinite}
+.bp-o{position:absolute;inset:0;background:#c8231b;clip-path:polygon(50% 0,62% 38%,100% 50%,62% 62%,50% 100%,38% 62%,0 50%,38% 38%)}
+.bp-i{position:absolute;inset:22%;background:#3a0606;clip-path:polygon(50% 0,60% 45%,50% 100%,40% 45%)}
+@keyframes bpc{0%,12%{transform:scale(0,0)}13%{transform:scale(.2,.35)}22%{transform:scale(.35,.7)}31%{transform:scale(.8,1)}40%{transform:scale(1.15,1.1)}85%{transform:scale(1.15,1.1);opacity:1}92%,100%{transform:scale(0,0);opacity:0}}
+.bp-d{position:absolute;left:50%;top:46%;width:14px;height:14px;background:#8f1a14;border:3px solid #e8463a;opacity:0;animation:bpd 4s steps(1) infinite}
+@keyframes bpd{0%,30%{opacity:0;transform:translate(0,0)}31%{opacity:1;transform:translate(calc(var(--x)*.4),calc(var(--y)*.4))}36%{transform:translate(calc(var(--x)*.8),calc(var(--y)*.8))}41%,80%{opacity:1;transform:translate(var(--x),var(--y))}86%,100%{opacity:0}}
+.bp-ban{position:absolute;left:50%;top:70%;width:480px;margin-left:-240px;height:84px;background:#3b2a1c;border:5px solid #6b4a2e;outline:4px solid #1d140d;display:flex;align-items:center;justify-content:center;color:#f3e6d0;font-size:30px;font-weight:700;opacity:0;animation:bpn 4s steps(1) infinite}
+@keyframes bpn{0%,44%{opacity:0;transform:translateY(-260%)}45%{opacity:1;transform:translateY(-140%)}48%{transform:translateY(-50%)}51%{transform:translateY(8%)}53%,85%{transform:none;opacity:1}92%,100%{opacity:0;transform:none}}
+.bp-paused *{animation-play-state:paused!important}
+</style>
+</head>
+<body>
+<div class="board" id="root"></div>
+<script src="dc-lite.js"></script>
+<script>
+DC.register("BossPreview", "<div style=\"width: 1400px; height: 940px; box-sizing: border-box; padding: 48px; display: flex; flex-direction: column; gap: 20px; background: #f5f6f8; font-family: 'Noto Sans KR', sans-serif; color: #1f2328\">\n<div style=\"display: flex; flex-direction: column; gap: 6px\">\n<p style=\"margin: 0; font-size: 14px; font-weight: 700; color: #4b5563\">랜덤직업디펜스 · 이펙트 · 움직이는 미리보기</p>\n<h1 style=\"margin: 0; font-size: 28px; font-weight: 700\">보스 등장 연출 (조립 방식)</h1>\n<p style=\"margin: 0; font-size: 14px; color: #4b5563\">4초 반복 · 경고 띠가 들어와 깜빡임 → 균열 4단계 → 이름 배너가 떨어짐. CSS 도형으로 만든 타이밍 확인용이며 실제 파츠 이미지는 '공통 이펙트' 보드에 있음. 배너 글자는 게임 텍스트 예시</p>\n</div>\n<div class=\"{{stageClass}}\" style=\"position: relative; width: 1200px; height: 675px; background: #2b3a2a; overflow: hidden; border-radius: 12px\">\n<div style=\"position: absolute; left: 22%; right: 22%; top: 18%; bottom: 18%; display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 6px\">\n<sc-for list=\"{{cells}}\" as=\"c\" hint-placeholder-count=\"18\"><div style=\"background: #3a4d37; border: 3px solid #4b6146\"></div></sc-for>\n</div>\n<div class=\"bp-band bp-top\"></div>\n<div class=\"bp-band bp-bot\"></div>\n<div class=\"bp-crack\"><div class=\"bp-o\"></div><div class=\"bp-i\"></div></div>\n<div class=\"bp-d\" style=\"--x: -150px; --y: -80px\"></div>\n<div class=\"bp-d\" style=\"--x: 140px; --y: -100px\"></div>\n<div class=\"bp-d\" style=\"--x: -120px; --y: 70px\"></div>\n<div class=\"bp-d\" style=\"--x: 160px; --y: 50px\"></div>\n<div class=\"bp-d\" style=\"--x: -30px; --y: -150px\"></div>\n<div class=\"bp-d\" style=\"--x: 50px; --y: 120px\"></div>\n<div class=\"bp-ban\">슬라임 킹</div>\n</div>\n<div style=\"display: flex; gap: 12px; align-items: center\">\n<button onClick=\"{{toggle}}\" style=\"font-family: inherit; font-size: 16px; padding: 10px 18px; border-radius: 8px; border: 1px solid #9ca3af; background: #ffffff; cursor: pointer; min-height: 44px\">{{toggleLabel}}</button>\n</div>\n</div>",
+(function () {
+class Component extends DCLogic {
+renderVals() {
+const paused = !!(this.state && this.state.paused);
+return {
+cells: Array.from({ length: 18 }, (_, i) => ({ id: i })),
+stageClass: paused ? 'bp-paused' : '',
+toggleLabel: paused ? '재생' : '일시정지',
+toggle: () => this.setState({ paused: !paused })
+};
+}
+}
+return Component;
+})(), {});
+DC.mount(document.getElementById('root'), "BossPreview", {});
+</script>
+</body>
+</html>

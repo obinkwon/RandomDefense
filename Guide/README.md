@@ -13,7 +13,7 @@
 
 ## 원본 아티팩트
 
-이 폴더의 문서는 아래 아티팩트를 옮겨 적은 것이다. 내용이 바뀌면 둘 다 고친다.
+이 폴더의 문서는 아래 아티팩트를 옮겨 적은 것이다. 2026-11-27부터는 이 폴더와 [DesignPreview/](../DesignPreview/index.html)가 기준이고, 아티팩트는 처음 만든 원본으로만 남겨 둔다. 규칙을 바꿀 때는 이 폴더만 고치며, 아티팩트는 따로 정리하기로 할 때만 고친다.
 
 - [랜덤직업디펜스 게임 아트 가이드](https://claude.ai/artifact/CDzjQP4G558tzmo9NZ11KX): 01, 03의 원본
 - [랜덤직업디펜스 공통 에셋 시안](https://claude.ai/artifact/4ygj7CdBxSzBh1sEBHUc6B): 맵 타일, 공통 UI, 이펙트, "게임 에셋으로 넣는 방법" 보드
@@ -34,6 +34,6 @@
 - [x] **카운터 파일 이름**: `counter_life/stage/enemy` → `counter_barrier/wave/monster`, 프리팹도 같이 바꿈
 - [x] **패널 크기**: 문서는 프로젝트 파일 크기로 통일 (01의 패널 목록). 디자인 캔버스 보드 쪽은 나중에 정리
 - [x] **색 헥스값**: 코드에 있는 등급색과 글자색을 01에 옮겨 적음
-- [ ] **카운터·소환 버튼 조립 방식**: 가이드대로 빈 패널 + 아이콘으로 바꿔야 함. 빈 카운터 패널과 아이콘 파일을 Canva에서 받아 와야 해서 남겨 둠
-- [ ] **UI 아이콘 32×32**: 위와 같이 Canva에서 아이콘을 받아 와야 함
-- [ ] **`Sprites/Enemy/Enemy.png`**: 씬과 프리팹 어디에서도 안 씀. 지울지 정해야 함
+- [x] **카운터·소환 버튼 조립 방식**: 빈 패널 `counter_panel` + 아이콘으로 바꿈. 패널과 아이콘은 공통 에셋 시안의 '공통 UI' 보드에서 가져옴. 아이콘이 들어간 한 장짜리 `counter_*.png`, `btn_summon.png`는 지움
+- [x] **UI 아이콘 32×32**: `icon_crystal/barrier/wave/time/monster/summon.png` 6개를 32×32로 만듦
+- [x] **`Sprites/Enemy/Enemy.png`**: 안 써서 지움
