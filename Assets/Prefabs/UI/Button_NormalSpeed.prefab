@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 2440542464299182291}
   - component: {fileID: 5902426081029640120}
   m_Layer: 0
-  m_Name: Button_Normal
+  m_Name: Button_NormalSpeed
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

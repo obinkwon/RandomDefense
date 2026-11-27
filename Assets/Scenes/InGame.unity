@@ -3773,7 +3773,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7289075298115868575, guid: 53e4d4da8a6b52844becff4c1dd75506, type: 3}
       propertyPath: m_Name
-      value: Counter_Life
+      value: Counter_Barrier
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -4855,7 +4855,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 571815217950017904, guid: 8ac0506c5a62d6e4b806681899ed95b2, type: 3}
       propertyPath: m_Name
-      value: Counter_Enemy
+      value: Counter_Monster
       objectReference: {fileID: 0}
     - target: {fileID: 7266677951203429638, guid: 8ac0506c5a62d6e4b806681899ed95b2, type: 3}
       propertyPath: m_Pivot.x
@@ -7585,7 +7585,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 4005835825692605808, guid: 8a6f0cf92a4b16c4f84d054ebf58fed3, type: 3}
       propertyPath: m_Name
-      value: Counter_Stage
+      value: Counter_Wave
       objectReference: {fileID: 0}
     - target: {fileID: 7100833310040263053, guid: 8a6f0cf92a4b16c4f84d054ebf58fed3, type: 3}
       propertyPath: m_Pivot.x

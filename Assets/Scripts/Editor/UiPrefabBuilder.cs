@@ -17,13 +17,13 @@ public static class UiPrefabBuilder
         Directory.CreateDirectory(PrefabDir);
 
         // 원형 버튼: 재생·일시정지·배속·설정·닫기
-        foreach (string name in new[] { "play", "pause", "fast", "normal", "settings", "close" })
+        foreach (string name in new[] { "play", "pause", "fast", "normal_speed", "settings", "close" })
             Save(MakeButton("btn_" + name), "Button_" + Pascal(name));
 
         Save(MakeButton("btn_summon"), "Button_Summon");
 
         // 카운터: 왼쪽 아이콘 옆에 숫자
-        foreach (string name in new[] { "crystal", "life", "stage", "time", "enemy" })
+        foreach (string name in new[] { "crystal", "barrier", "wave", "time", "monster" })
             Save(MakeCounter("counter_" + name), "Counter_" + Pascal(name));
 
         // 패널: 9-slice로 늘려 쓴다
@@ -94,6 +94,11 @@ public static class UiPrefabBuilder
 
     private static string Pascal(string s)
     {
-        return char.ToUpper(s[0]) + s.Substring(1);
+        // normal_speed → NormalSpeed
+        var sb = new System.Text.StringBuilder();
+        foreach (string part in s.Split('_'))
+            if (part.Length > 0)
+                sb.Append(char.ToUpper(part[0])).Append(part.Substring(1));
+        return sb.ToString();
     }
 }

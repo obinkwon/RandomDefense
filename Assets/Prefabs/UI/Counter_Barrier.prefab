@@ -149,7 +149,7 @@ GameObject:
   - component: {fileID: 5431149144846700036}
   - component: {fileID: 3423913207767520092}
   m_Layer: 0
-  m_Name: Counter_Life
+  m_Name: Counter_Barrier
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

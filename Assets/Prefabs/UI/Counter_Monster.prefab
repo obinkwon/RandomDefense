@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 7368153482243665020}
   - component: {fileID: 7505222662731842752}
   m_Layer: 0
-  m_Name: Counter_Enemy
+  m_Name: Counter_Monster
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

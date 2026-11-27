@@ -47,10 +47,10 @@ public static class HudSetup
         // 위쪽 한 줄: 카운터 (왼쪽부터)
         float x = 20f;
         TMP_Text crystal = Counter("Counter_Crystal", hud, ref x);
-        TMP_Text life = Counter("Counter_Life", hud, ref x);
-        TMP_Text stage = Counter("Counter_Stage", hud, ref x);
+        TMP_Text life = Counter("Counter_Barrier", hud, ref x);
+        TMP_Text stage = Counter("Counter_Wave", hud, ref x);
         TMP_Text time = Counter("Counter_Time", hud, ref x);
-        TMP_Text enemy = Counter("Counter_Enemy", hud, ref x);
+        TMP_Text enemy = Counter("Counter_Monster", hud, ref x);
 
         // 오른쪽 위: 설정, 배속, 일시정지 (오른쪽부터)
         Button settings = Place("Button_Settings", hud, new Vector2(1, 1), new Vector2(-20, -10), 100);
@@ -94,7 +94,7 @@ public static class HudSetup
         so.FindProperty("pauseSprite").objectReferenceValue = LoadSprite("btn_pause");
         so.FindProperty("playSprite").objectReferenceValue = LoadSprite("btn_play");
         so.FindProperty("fastSprite").objectReferenceValue = LoadSprite("btn_fast");
-        so.FindProperty("normalSprite").objectReferenceValue = LoadSprite("btn_normal");
+        so.FindProperty("normalSprite").objectReferenceValue = LoadSprite("btn_normal_speed");
         so.ApplyModifiedProperties();
 
         // 조합표와 선택 표시 그림 연결 (씬 파일을 직접 고치면 열린 씬 저장 때 덮어써진다)
