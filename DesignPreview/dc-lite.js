@@ -72,8 +72,41 @@
       const ctx = { inst, importIndex: 0 };
       const frag = document.createDocumentFragment();
       for (const n of entry.tpl.content.childNodes) renderNode(n, vals, frag, ctx, false);
+      const times = saveAnimTimes(host);
       host.replaceChildren(frag);
+      restoreAnimTimes(host, times);
     };
+  }
+
+  // 다시 그릴 때마다 DOM을 새로 만들기 때문에, 그대로 두면 CSS 애니메이션이 매번 처음부터 다시 시작한다.
+  // 같은 자리에 같은 애니메이션이 다시 생기면 진행 시간을 이어 붙인다.
+  function animKey(el, host, name) {
+    const path = [];
+    for (let n = el; n && n !== host; n = n.parentElement) {
+      let i = 0;
+      for (let s = n.previousElementSibling; s; s = s.previousElementSibling) i++;
+      path.push(n.tagName + '.' + n.getAttribute('class') + '#' + i);
+    }
+    return path.reverse().join('>') + '@' + name;
+  }
+
+  function cssAnims(host) {
+    if (!host.getAnimations) return [];
+    return host.getAnimations({ subtree: true }).filter(a => a.animationName && a.effect && a.effect.target);
+  }
+
+  function saveAnimTimes(host) {
+    const m = new Map();
+    for (const a of cssAnims(host)) m.set(animKey(a.effect.target, host, a.animationName), a.currentTime);
+    return m;
+  }
+
+  function restoreAnimTimes(host, times) {
+    if (!times.size) return;
+    for (const a of cssAnims(host)) {
+      const t = times.get(animKey(a.effect.target, host, a.animationName));
+      if (t != null) a.currentTime = t;
+    }
   }
 
   function renderChildren(node, scope, out, ctx, svg) {
